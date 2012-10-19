@@ -8,14 +8,14 @@ extern mod std;
    so that the function can allocate into it
 */
 
-struct Tree/&{
+struct Tree {
     mut leftTree: Option<~Tree>,
     mut rightTree: Option<~Tree>,
     key: int
 }
 
 impl Tree {
-    fn insert(&self, i: int) -> () {
+    fn insert(&self, i: int) {
         let mut node = None;
         if i > self.key {
             node <-> self.rightTree;
