@@ -2,3 +2,6 @@ hello
 .cargo
 ackermann
 fact
+.*
+!.gitignore
+hello-x
