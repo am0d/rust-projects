@@ -1,3 +1,9 @@
 .*
+*.o
+*.so
+*.dummy
+*.a
 !.gitignore
 crawler
+http_client-test
+Makefile
