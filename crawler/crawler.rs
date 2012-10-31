@@ -1,9 +1,9 @@
 use request::Request;
 
 fn main() {
-    let r = Request(~"http://example.com/index.php?test=0");
+    let r = Request(~"http://www.google.com/robots.txt");
     let response = r.get();
 
-    io::println(response);
+    io::println(fmt!("%?", response));
     return;
 }

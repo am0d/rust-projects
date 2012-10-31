@@ -113,11 +113,14 @@ pub fn HttpRequest<C: Connection, CF: ConnectionFactory<C>>(resolver: DnsResolve
 
 #[allow(non_implicitly_copyable_typarams)]
 impl<C: Connection, CF: ConnectionFactory<C>> HttpRequest<C, CF> {
-    fn begin(cb: fn@(ev: RequestEvent)) -> ~str {
+    fn begin() -> Result<~str, ~str> {
         debug!("http_client: looking up url %?", self.url.to_str());
         let ip_addr = match self.get_ip() {
           Ok(addr) => { copy addr }
-          Err(e) => { cb(Error(e)); return ~""}
+          Err(e) => { 
+             // cb(Error(e)); 
+              return Err(fmt!("http_client: unable to resolve address: %?", e));
+          }
         };
 
         debug!("http_client: using IP %? for %?", format_addr(&ip_addr), self.url.to_str());
@@ -129,8 +132,8 @@ impl<C: Connection, CF: ConnectionFactory<C>> HttpRequest<C, CF> {
                 result::unwrap(move socket)
             } else {
                 #debug("http_client: unable to connect to %?: %?", ip_addr, socket);
-                cb(Error(ErrorConnect));
-                return ~"";
+                //cb(Error(ErrorConnect));
+                return Err(fmt!("http_client: unable to connect to %?: %?", ip_addr, socket));
             }
         };
 
@@ -141,10 +144,10 @@ impl<C: Connection, CF: ConnectionFactory<C>> HttpRequest<C, CF> {
         let request_header_bytes = str::to_bytes(request_header);
         match socket.write_(move request_header_bytes) {
           result::Ok(*) => { }
-          result::Err(*) => {
+          result::Err(e) => {
             // FIXME: Need test
-            cb(Error(ErrorMisc));
-            return ~"";
+            //cb(Error(ErrorMisc));
+            return Err(fmt!("http_client: unable to write to socket: %?", e));
           }
         }
 
@@ -153,8 +156,8 @@ impl<C: Connection, CF: ConnectionFactory<C>> HttpRequest<C, CF> {
             if read_port.is_ok() {
                 result::unwrap(move read_port)
             } else {
-                cb(Error(ErrorMisc));
-                return ~"";
+                //cb(Error(ErrorMisc));
+                return Err(fmt!("http_client: unable get port for reading: %?", read_port));
             }
         };
 
@@ -164,8 +167,8 @@ impl<C: Connection, CF: ConnectionFactory<C>> HttpRequest<C, CF> {
 
             if next_data.is_ok() {
                 let next_data = result::unwrap(move next_data);
-                debug!("data: %?", str::from_bytes(next_data));
-                response = str::append(response, str::from_bytes(next_data));
+                //debug!("data: %?", str::from_bytes(next_data));
+                response = str::append(move response, str::from_bytes(next_data));
             } else {
                 #debug("http_client: read error: %?", next_data);
 
@@ -178,14 +181,14 @@ impl<C: Connection, CF: ConnectionFactory<C>> HttpRequest<C, CF> {
                   _ => {
                     // FIXME: Need tests and error handling
                     socket.read_stop_(read_port);
-                    cb(Error(ErrorMisc));
-                    return ~"";
+                    //cb(Error(ErrorMisc));
+                    return Err(fmt!("http_client: read error: %?", next_data));
                   }
                 }
             }
         }
         socket.read_stop_(read_port);
-        return response;
+        return Ok(move response);
     }
 
     fn get_ip() -> Result<IpAddr, RequestError> {
@@ -219,150 +222,4 @@ impl<C: Connection, CF: ConnectionFactory<C>> HttpRequest<C, CF> {
             return Err(ErrorDnsResolution);
         }
     }
-
-    fn on_message_begin() -> bool {
-        #debug("on_message_begin");
-        true
-    }
-
-    fn on_url(_data: ~[u8]) -> bool {
-        #debug("on_url");
-        true
-    }
-
-    fn on_header_field(data: ~[u8]) -> bool {
-        let header_field = str::from_bytes(data);
-        #debug("on_header_field: %?", header_field);
-        true
-    }
-
-    fn on_header_value(data: ~[u8]) -> bool {
-        let header_value = str::from_bytes(data);
-        #debug("on_header_value: %?", header_value);
-        true
-    }
-
-    fn on_headers_complete() -> bool {
-        #debug("on_headers_complete");
-        true
-    }
-
-    fn on_body(data: ~[u8]) -> bool {
-        #debug("on_body");
-        let the_payload = Payload(~mut Some(move data));
-        self.cb(move the_payload);
-        true
-    }
-
-    fn on_message_complete() -> bool {
-        #debug("on_message_complete");
-        true
-    }
-}
-
-#[allow(non_implicitly_copyable_typarams)]
-pub fn sequence<C: Connection, CF: ConnectionFactory<C>>(request: HttpRequest<C, CF>) -> 
-    ~[RequestEvent] {
-    
-    let events = @mut ~[];
-//    do request.begin |event| {
-//        vec::push(&mut *events, move event)
-//    }
-    return copy *events;
-}
-
-#[test]
-#[allow(non_implicitly_copyable_typarams)]
-pub fn test_resolve_error() {
-    let url = url::from_str(~"http://example.com_not_real/").get();
-    let request = uv_http_request(move url);
-    let events = sequence(move request);
-
-    assert events == ~[
-        Error(ErrorDnsResolution),
-    ];
-}
-
-#[test]
-#[allow(non_implicitly_copyable_typarams)]
-pub fn test_connect_error() {
-    // This address is invalid because the first octet
-    // of a class A address cannot be 0
-    let url = url::from_str(~"http://0.42.42.42/").get();
-    let request = uv_http_request(move url);
-    let events = sequence(move request);
-
-    assert events == ~[
-        Error(ErrorConnect),
-    ];
-}
-
-#[test]
-#[allow(non_implicitly_copyable_typarams)]
-pub fn test_connect_success() {
-    let url = url::from_str(~"http://example.com/").get();
-    let request = uv_http_request(move url);
-    let events = sequence(move request);
-
-    for events.each |ev| {
-        match *ev {
-          Error(*) => { fail }
-          _ => { }
-        }
-    }
-}
-
-#[test]
-#[allow(non_implicitly_copyable_typarams)]
-pub fn test_simple_body() {
-    let url = url::from_str(~"http://www.iana.org/").get();
-    let request = uv_http_request(move url);
-    let events = sequence(move request);
-
-    let mut found = false;
-
-    for events.each |ev| {
-        match *ev {
-          Payload(value) => {
-            debug!("Data: %?", str::from_bytes(value.get()));
-            if str::from_bytes(value.get()).contains(~"DOCTYPE html") {
-                found = true
-            }
-          }
-          _ => {
-              debug!("Wrong path!");
-          }
-        }
-    }
-
-    assert found;
-}
-
-#[test]
-#[allow(non_implicitly_copyable_typarams)]
-pub fn test_simple_response() {
-    let _url = url::from_str(~"http://whatever/").get();
-    let _mock_connection: MockConnection = {
-        write_fn: |_data| { Ok(()) },
-        read_start_fn: || {
-            let port = Port();
-            let chan = port.chan();
-
-            let response = ~"HTTP/1.0 200 OK\
-                            \
-                            Test";
-            chan.send(Ok(str::to_bytes(response)));
-
-            Ok(port)
-        },
-        read_stop_fn: |_port| { Ok(()) }
-    };
-
-    let _mock_connection_factory: MockConnectionFactory = {
-        connect_fn: |_ip, _port| {
-
-            // FIXME this doesn't work
-            fail;//ok(mock_connection)
-        }
-    };
 }

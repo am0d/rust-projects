@@ -9,6 +9,7 @@ CFLAGS ?=
 CFLAGS += -fPIC
 
 RUST_SRC = $(shell find $(VPATH)/. -type f -name '*.rs')
+RUST_SRC = crawler.rs request.rs
 
 .PHONY: all
 all: crawler
