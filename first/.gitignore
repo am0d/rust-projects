@@ -5,3 +5,4 @@ fact
 .*
 !.gitignore
 hello-x
+hello-multithreaded
