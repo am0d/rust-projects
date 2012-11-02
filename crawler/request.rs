@@ -1,6 +1,7 @@
 use io::{Writer,WriterUtil,Reader,ReaderUtil};
 use std::net::url;
 use std::net::ip;
+use task;
 use socket=std::net::tcp;
 
 enum HttpMethod {
@@ -25,7 +26,7 @@ pub fn Request(requestUrl: ~str) -> Request {
 impl Request {
     fn get () -> ~str {
         let ip_address = {
-            let ip_address = get_ip_address(self.url);
+            let ip_address = get_ip_address(&self.url);
             if ip_address.is_ok() {
                 result::unwrap(move ip_address)
             } else {
@@ -33,8 +34,13 @@ impl Request {
             }
         };
 
+        let ip_address = match ip::get_addr("www.google.com", uv_global_loop::get()) {
+            Ok(m) => copy m,
+            _ => fail
+        }.head();
+
         let connection = {
-            let connection = socket::connect(ip_address, 80, uv_global_loop::get());
+            let connection = socket::connect(move ip_address, 80, uv_global_loop::get());
             if connection.is_ok() {
                 socket::socket_buf(result::unwrap(move connection))
             } else {
@@ -43,24 +49,28 @@ impl Request {
         };
 
         let writer = connection as Writer;
-        debug!("Writing");
-        writer.write_str(build_request(self.url));
-        debug!("Written");
+        writer.write_str(build_request(&self.url));
         writer.flush();
-        debug!("Flushed");
 
-        let reader = connection as Reader;
-        loop {
-            let response = reader.read_line();  //crashes here due to bug #3891
-            debug!("%s", response);
-        }
+            let reader = connection as Reader;
+            let mut headers = ~"";
+            let mut end_of_header = false;
+            while !end_of_header {
+                let line = reader.read_line();
+                //debug!("%s", line);
+                if str::trim_chars(line, ['\r', ' ']).is_empty() {
+                    end_of_header = true;
+                }
+                headers = str::concat([move headers, ~"\n", move line]);
+            }
 
-        return ~"";
-   //     return str::from_bytes(response);
+            let mut response = str::from_bytes(reader.read_whole_stream());
+
+        move str::concat([move headers, ~"\n", move response])
     }
 }
 
-fn build_request(url: Url) -> ~str {
+fn build_request(url:& Url) -> ~str {
     let host = copy url.host;
     let mut path = 
         if url.path.is_not_empty() { 
@@ -84,7 +94,7 @@ fn build_request(url: Url) -> ~str {
     return move request_header;
 }
 
-fn get_ip_address (url: Url) -> Result<IpAddr, ~str> {
+fn get_ip_address (url: &Url) -> Result<IpAddr, ~str> {
     let resolution = ip::get_addr(url.host, uv_global_loop::get());
 
     if resolution.is_ok() {

@@ -139,7 +139,7 @@ impl<C: Connection, CF: ConnectionFactory<C>> HttpRequest<C, CF> {
 
         debug!("http_client: got socket for %?", ip_addr);
 
-        let request_header = build_request(copy self.url);
+        let request_header = build_request(&self.url);
         debug!("http_client: writing request header: %?", request_header);
         let request_header_bytes = str::to_bytes(request_header);
         match socket.write_(move request_header_bytes) {
