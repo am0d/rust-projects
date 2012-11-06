@@ -1,25 +1,22 @@
 use io::{Writer,WriterUtil,Reader,ReaderUtil};
 use std::net::url;
+use std::net::url::*;
 use std::net::ip;
-use task;
+use std::net::ip::{Ipv4,Ipv6,IpAddr};
+use std::uv_global_loop;
 use socket=std::net::tcp;
-
-enum HttpMethod {
-    GET,
-    POST,
-    PUT,
-    DELETE
-}
 
 struct Request {
     url: Url,
-     method: HttpMethod
+    mut headers: headers::HttpHeaderCollection,
+    mut response_text: Option<~str>
 }
 
 pub fn Request(requestUrl: ~str) -> Request {
     Request {
         url: url::from_str(requestUrl).get(),
-        method: GET
+        headers: headers::HttpHeaderCollection(),
+        response_text: None
     }
 }
 
@@ -34,11 +31,6 @@ impl Request {
             }
         };
 
-        let ip_address = match ip::get_addr("www.google.com", uv_global_loop::get()) {
-            Ok(m) => copy m,
-            _ => fail
-        }.head();
-
         let connection = {
             let connection = socket::connect(move ip_address, 80, uv_global_loop::get());
             if connection.is_ok() {
@@ -52,21 +44,31 @@ impl Request {
         writer.write_str(build_request(&self.url));
         writer.flush();
 
-            let reader = connection as Reader;
-            let mut headers = ~"";
-            let mut end_of_header = false;
-            while !end_of_header {
-                let line = reader.read_line();
-                //debug!("%s", line);
-                if str::trim_chars(line, ['\r', ' ']).is_empty() {
-                    end_of_header = true;
-                }
-                headers = str::concat([move headers, ~"\n", move line]);
+        let reader = connection as Reader;
+        let mut headers = ~"";
+        let mut end_of_header = false;
+        while !end_of_header {
+            let line = reader.read_line();
+            //debug!("%s", line);
+            if str::trim_chars(line, ['\r', ' ']).is_empty() {
+                end_of_header = true;
             }
+            headers = str::concat([move headers, ~"\n", move line]);
+        }
+        self.headers.parse(headers);
 
-            let mut response = str::from_bytes(reader.read_whole_stream());
+        let response = str::from_bytes(reader.read_whole_stream());
+        self.response_text = Some(move response);
 
-        move str::concat([move headers, ~"\n", move response])
+        ~""
+    }
+
+    fn get_content_type() -> ~str {
+        return ~"text/html"
+    }
+
+    fn get_status_code() -> int {
+        return self.headers.get_status_code()
     }
 }
 
@@ -101,7 +103,7 @@ fn get_ip_address (url: &Url) -> Result<IpAddr, ~str> {
         debug!("Host resolution successful");
         let ip_addrs = result::unwrap(move resolution);
         if ip_addrs.is_not_empty() {
-            let best_ip = do ip_addrs.find |ip| {
+            let best_ip = do (move ip_addrs).find |ip| {
                 match ip {
                     Ipv4(*) => { true }
                     Ipv6(*) => { false }
