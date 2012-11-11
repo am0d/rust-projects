@@ -1,3 +1,5 @@
+#[allow(non_implicitly_copyable_typarams)];
+
 use request::Request;
 
 fn main() {

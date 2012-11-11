@@ -1,3 +1,5 @@
+#[allow(non_implicitly_copyable_typarams)];
+
 use io::{Writer,WriterUtil,Reader,ReaderUtil};
 use std::net::url;
 use std::net::url::*;
@@ -120,10 +122,6 @@ fn get_ip_address (url: &Url) -> Result<IpAddr, ~str> {
         }
     } else {
         debug!("Host resolution error: %?", resolution);
-        match resolution.get_err() {
-            GetAddrUnknownErr => {
-                return Err(~"Host unknown");
-            }
-        }
+        return Err(~"Host unknown");
     }
 }
