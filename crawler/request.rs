@@ -24,6 +24,9 @@ pub fn Request(requestUrl: ~str) -> Request {
 
 impl Request {
     fn get () -> ~str {
+        // perform a GET request for the resource.
+        // TODO: move most of this out to a separate function so that it
+        // can be shared with POST, PUT, HEAD, DELETE, etc.
         let ip_address = {
             let ip_address = get_ip_address(&self.url);
             if ip_address.is_ok() {

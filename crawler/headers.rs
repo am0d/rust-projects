@@ -80,6 +80,10 @@ impl HttpHeaderCollection {
     }
 
     fn get_header(&const self, header_name: ~str) -> ~str {
+        // Get the value of a header, or empty string if not found
+        // TODO Find a way to return multiple header values when they exist
+        // (e.g. Set-Cookie which may appear multiple times).
+        // Perhaps use an enum for the values?
         match self.header_collection.find (&header_name) {
             Some(value) => {
                 copy value[0]
@@ -91,12 +95,14 @@ impl HttpHeaderCollection {
     }
 
     fn to_str(&const self) -> ~str {
+        // Converts the headers to a string representation
+        // Note that this is not necessarily in the same order as they
+        // were received in
         let mut header_string = ~"";
         let mut headers = copy self.header_collection;
         do headers.each |key, value| {
             header_string = str::append(header_string, 
             do vec::foldl(~"", *value) |prev_value, header_value| {
-                debug!("%s: %s", *key, *header_value);
                 str::append(prev_value, fmt!("%s: %s\n", *key, *header_value))
             });
             true
