@@ -66,7 +66,7 @@ impl Request {
     }
 
     fn get_content_type() -> ~str {
-        return ~"text/html"
+        return self.headers.get_header(~"Content-Type")
     }
 
     fn get_status_code() -> int {
