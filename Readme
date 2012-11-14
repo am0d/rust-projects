@@ -5,6 +5,7 @@ A small repository, containing some programs I've written as I set about learnin
 Projects:
     - First: some very small, hello-world style programs to get a feel for the language
     - Data structures: trying out some basic data structures in Rust
+    - Crawler: a test of the Rust networking libraries, and a chance for me to try some networking code
 
 All code is available under the MIT license.
 
