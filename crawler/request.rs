@@ -1,12 +1,12 @@
 #[allow(non_implicitly_copyable_typarams)];
 
 use io::{Writer,WriterUtil,Reader,ReaderUtil};
-use std::net::url;
+use url=std::net_url;
 use std::net::url::*;
-use std::net::ip;
-use std::net::ip::{Ipv4,Ipv6,IpAddr};
+use ip=std::net_ip;
+use std::net_ip::{Ipv4,Ipv6,IpAddr};
 use std::uv_global_loop;
-use socket=std::net::tcp;
+use socket=std::net_tcp;
 
 struct Request {
     url: Url,

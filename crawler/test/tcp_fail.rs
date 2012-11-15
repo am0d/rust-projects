@@ -1,7 +1,6 @@
-extern mod std(vers="0.5");
-extern mod core(vers="0.5");
-use std::net::ip;
-use socket=std::net::tcp;
+extern mod std;
+use ip=std::net_ip;
+use tcp=std::net_tcp;
 use std::uv_global_loop;
 
 fn main() {
@@ -13,7 +12,7 @@ fn main() {
     io::println(fmt!("%?", ip_address));
 
     let _ = {
-        let connection = socket::connect(move ip_address, 80, uv_global_loop::get());
+        let connection = tcp::connect(move ip_address, 80, uv_global_loop::get());
         if connection.is_ok() {
             move result::unwrap(move connection)
         } else {
