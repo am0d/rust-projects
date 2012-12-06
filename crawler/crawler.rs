@@ -3,7 +3,7 @@
 use request::Request;
 
 fn main() {
-    let r = Request(~"http://www.google.com/");
+    let r = Request(~"http://www.example.com/");
     let _ = r.get();
 
     io::println(fmt!("Status: %d", r.get_status_code()));

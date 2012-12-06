@@ -1,0 +1,38 @@
+A simple web crawler written in Rust.
+
+Note that the code in this directory is *NOT* supposed to be good Rust code -
+I'm still in the process of learning Rust and therefore make no guarantees about
+the quality of this code.
+
+I'm also aware of a number of deficiencies in the method I use to download pages.
+
+Todo items:
+    - create a chain of redirects rather than over-writing the request each time
+    - parse the content for any links which we can crawl
+    - make the crawler multi threaded
+    - make the crawler accept bad input strings (ie non-utf8; currently, it will
+                                                 crash in the std library when
+                                                 downloading http://www.google.ca)
+
+
+
+This code is released under the MIT license, as follows:
+Copyright (c) 2012 Damien Schoof.
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of 
+this software and associated documentation files (the "Software"), to deal in 
+the Software without restriction, including without limitation the rights to use,
+copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the 
+Software, and to permit persons to whom the Software is furnished to do so, 
+subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included in 
+    all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, 
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE 
+    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, 
+    WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR 
+    IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+

@@ -9,7 +9,7 @@ use std::uv_global_loop;
 use socket=std::net_tcp;
 
 struct Request {
-    url: Url,
+    mut url: Url,
     mut headers: headers::HttpHeaderCollection,
     mut response_text: Option<~str>
 }
@@ -28,7 +28,7 @@ impl Request {
         // TODO: move most of this out to a separate function so that it
         // can be shared with POST, PUT, HEAD, DELETE, etc.
         let ip_address = {
-            let ip_address = get_ip_address(&self.url);
+            let ip_address = get_ip_address(self.url);
             if ip_address.is_ok() {
                 result::unwrap(move ip_address)
             } else {
@@ -46,7 +46,7 @@ impl Request {
         };
 
         let writer = connection as Writer;
-        writer.write_str(build_request(&self.url));
+        writer.write_str(build_request(self.url));
         writer.flush();
 
         let reader = connection as Reader;
@@ -60,11 +60,31 @@ impl Request {
             }
             headers = str::concat([move headers, ~"\n", move line]);
         }
+        debug!("%s", headers);
         self.headers.parse(headers);
 
-        let response = str::from_bytes(reader.read_whole_stream());
-        self.response_text = Some(move response);
-
+        match self.headers.get_status_code() {
+            302 => {
+                io::println(fmt!("Redirecting to %s", self.headers.get_header(~"Location")));
+                let new_url = url::from_str(self.headers.get_header(~"Location")).get();
+                self.url = move new_url;
+                self.headers = headers::HttpHeaderCollection();
+                debug!("Getting now ...");
+                return self.get()
+            },
+            _ => {
+                debug!("Getting stream");
+                let mut response = ~"";
+                let mut end_of_response = false;
+                while !reader.eof() {
+                    let line = reader.read_line();
+                    debug!("%s", line);
+                    response = str::concat([move response, ~"\n", move line]);
+                }
+                debug!("Got response");
+                self.response_text = Some(move response);
+            }
+        }
         ~""
     }
 
@@ -77,7 +97,7 @@ impl Request {
     }
 }
 
-fn build_request(url:& Url) -> ~str {
+fn build_request(url: Url) -> ~str {
     let host = copy url.host;
     let mut path = 
         if url.path.is_not_empty() { 
@@ -101,7 +121,7 @@ fn build_request(url:& Url) -> ~str {
     return move request_header;
 }
 
-fn get_ip_address (url: &Url) -> Result<IpAddr, ~str> {
+fn get_ip_address (url: Url) -> Result<IpAddr, ~str> {
     let resolution = ip::get_addr(url.host, uv_global_loop::get());
 
     if resolution.is_ok() {
