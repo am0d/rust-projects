@@ -7,6 +7,6 @@ Projects:
     - Data structures: trying out some basic data structures in Rust
     - Crawler: a test of the Rust networking libraries, and a chance for me to try some networking code
 
-All code is available under the MIT license.
+All code is available under the MIT license - see License.txt for further details.
 
 Copyright Damien Schoof 2012.

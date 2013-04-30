@@ -1,3 +1,13 @@
+/* Sample bubble sort program in Rust.
+   Tested to compile with rust-0.6-f1ddb8d.
+
+   $ rustc bubble-sort.rs
+   $ time ./bubble-sort 
+
+   real 1m2.749s
+   user 1m2.580s
+   sys  0m0.008s
+*/
 use core::rand;
 use core::vec;
 
@@ -19,6 +29,7 @@ fn bubble_sort(mut arr: ~[uint]) -> ~[uint] {
         right = left + 1;
         while right < max {
             if arr[right] < arr[left] {
+                // swap the two values
                 arr[left] <-> arr[right];
             }
             right += 1;
@@ -31,9 +42,9 @@ fn bubble_sort(mut arr: ~[uint]) -> ~[uint] {
 }
 
 fn main() {
-    let vals = generate_random_array(10);
+    let vals = generate_random_array(100000);
     let sorted_vals = bubble_sort(vals);
-    for sorted_vals.each |v| {
+    /*for sorted_vals.each |v| {
         core::io::println(fmt!("%?", *v));
-    }
+    }*/
 }
