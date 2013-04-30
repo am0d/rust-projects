@@ -1,14 +1,14 @@
 extern mod std;
-use task::spawn;
-use pipes::{stream, SharedChan};
+use core::task::spawn;
+use core::comm::{stream, SharedChan};
 
 fn main () {
-    let (chan, port) = stream();
-    let chan = SharedChan(move chan);
+    let (port, chan): (Port<int>, Chan<int>) = stream();
+    let chan: SharedChan<int> = SharedChan::new(chan);
 
     for int::range(0, 20) |child_number| {
-        let child_chan = chan.clone();
-        do spawn |move child_chan| {
+        let child_chan: SharedChan<int> = chan.clone();
+        do spawn {
             child_chan.send(child_number);
         }
     }

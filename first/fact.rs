@@ -22,6 +22,9 @@ fn main() {
         };
             
         let val= fact(val);
-        io::println(#fmt("%d", val));
+        io::println(fmt!("%d", val));
+    }
+    else {
+        io::println(fmt!("Usage: %s n", args[0]));
     }
 }

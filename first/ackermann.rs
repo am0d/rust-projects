@@ -37,6 +37,6 @@ fn main() {
 
     let result = ackermann(m, n);
 
-    io::println(#fmt("ackermann(%d, %d)", m, n));
-    io::println(#fmt("Result: %d", result));
+    io::println(fmt!("ackermann(%d, %d)", m, n));
+    io::println(fmt!("Result: %d", result));
 }

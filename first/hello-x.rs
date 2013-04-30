@@ -1,5 +1,5 @@
 extern mod std;
-use io::ReaderUtil;
+use core::io::ReaderUtil;
 
 fn main() {
     io::println(~"What is your name?");
