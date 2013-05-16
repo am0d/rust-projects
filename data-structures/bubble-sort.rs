@@ -56,7 +56,7 @@ impl Timer {
                 // HACK: fmt!("%02?.", seconds) doesn't zero pad
                 time_string += "0";
             }
-            time_string += fmt!("%2?.", seconds);
+            time_string += fmt!("%?.", seconds);
         }
         time_string += fmt!("%.5?", nanoseconds);
 
