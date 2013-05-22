@@ -4,6 +4,7 @@
 extern mod std;
 extern mod benchmark;
 use core::vec;
+use benchmark::Benchmark;
 
 fn bubble_sort(arr: &mut [uint]) -> () {
     let mut left = 0;
@@ -27,7 +28,6 @@ fn bubble_sort(arr: &mut [uint]) -> () {
 }
 
 fn main() {
-    for 500.times {
-        benchmark::run(100, bubble_sort);
-   }
+    let mut bench = Benchmark::new();
+    bench.run(bubble_sort);
 }

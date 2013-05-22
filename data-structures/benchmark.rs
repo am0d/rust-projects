@@ -2,71 +2,122 @@
 #[crate_type = "lib"]
 
 extern mod std;
+extern mod timer;
 use core::rand;
 use core::vec;
+use std::getopts::*;
+use timer::Timer;
+
+struct Benchmark {
+    mut num_trials: uint,
+    mut trial_size: uint,
+    mut quiet: u8,
+    mut parse_args: bool
+}
+
+pub impl Benchmark {
+    fn new () -> Benchmark {
+        Benchmark { num_trials: 1, trial_size: 10, quiet: 0, parse_args: true}
+    }
+    fn parse_opts(&mut self) -> () {
+        if self.parse_args {
+            let args = os::args();
+            let opts = ~[
+                optflagmulti("q"),
+                optflag("quiet"),
+                optopt("trialsize"),
+                optopt("numtrials")
+                ];
+            let matches = match getopts(vec::tail(args), opts) {
+                result::Ok(m) => { m }
+                result::Err(f) => { fail!(fail_str(f)) }
+            };
+            if opt_present(&matches, "q") || opt_present(&matches, "quiet") {
+                self.quiet = opt_count(&matches, "q") as u8;
+                if self.quiet < 1{
+                    self.quiet = 1;
+                }
+            }
+
+            match opt_maybe_str(&matches, "trialsize") {
+                Some(size) => {
+                    match uint::from_str(size) {
+                        Some(ts) => { self.trial_size = ts }
+                        None => { fail!("Trial size must be an integer") }
+                    }
+                }
+                None => {}
+            }
+
+            match opt_maybe_str(&matches, "numtrials") {
+                Some(trials) => {
+                    match uint::from_str(trials) {
+                        Some(t) => { self.num_trials = t }
+                        None => { fail!("Number of trials must be an integer") }
+                    }
+                }
+                None => {}
+            }
+
+            self.parse_args = false;
+        }
+    }
+
+    fn run(&mut self, sort: ~fn(&mut [uint])) -> () {
+        self.parse_opts();
+        let mut timer = Timer::new();
+        let mut trial_number = 0;
+
+        for self.num_trials.times {
+            let mut vals = generate_random_array(self.trial_size);
+            /* Run the sort and record the timing */
+            match self.quiet {
+                0 => { core::io::println("Starting sort ..."); }
+                1 => { core::io::println(fmt!("Trial %?", trial_number)); }
+                _ => {}
+            }
+
+            timer.start();
+            sort(vals);
+            timer.end();
+
+            match self.quiet {
+                0 => { core::io::println("Sort finished, verifying ..."); }
+                _ => {}
+            }
+
+            /* Check that it actually is sorted */
+            if !ensure_sorted(vals) {
+                /* Print the values so we can see what they actually look like.
+                   Note: Should probably only do this if the array is small */
+                for vals.each |v| {
+                    core::io::println(fmt!("%?", *v as uint));
+                }
+                fail!(fmt!("Trial %?: Array was not sorted correctly", trial_number));
+            }
+
+            match self.quiet {
+                0 => { core::io::println("Sort was correct."); }
+                _ => {}
+            }
+            /* Show the time it took */
+            match self.quiet {
+                0 => { timer.show_time(); }
+                _ => {}
+            }
+            trial_number += 1;
+        }
+    }
+}
 
 pub fn generate_random_array(size: uint) -> ~[uint] {
     let ret = vec::build_sized(size, |push| {
-        for size.times {
-            push(rand::random());
-        }
-    });
+                               for size.times {
+                                    push(rand::random());
+                               }
+                               });
 
     return ret;
-}
-
-pub struct Timer {
-    mut start_time: u64,
-    mut end_time: u64
-}
-
-pub impl Timer {
-    pub fn new() -> Timer {
-        Timer { start_time: 0, end_time: 0}
-    }
-    pub fn start(&mut self) -> () {
-        self.start_time = std::time::precise_time_ns();
-    }
-    pub fn end(&mut self) -> () {
-        self.end_time = std::time::precise_time_ns();
-    }
-    pub fn get_time_string(&mut self) -> ~str {
-        let MIN_MULTIPLIER:u64 = 60 * 1000 * 1000 * 1000;
-        let SEC_MULTIPLIER:u64 = 1000 * 1000 * 1000;
-
-        let total_time = self.end_time - self.start_time;
-        let minutes = total_time / MIN_MULTIPLIER;
-        let seconds = (total_time - minutes * MIN_MULTIPLIER) / SEC_MULTIPLIER;
-        let nanoseconds = (total_time - minutes * MIN_MULTIPLIER - seconds * SEC_MULTIPLIER);
-
-        let mut time_string = ~"";
-        if minutes > 0 {
-            time_string += fmt!("%?:", minutes);
-        }
-        if minutes > 0 || seconds > 0 {
-            if seconds < 10 {
-                // HACK: fmt!("%02?.", seconds) doesn't zero pad
-                time_string += "0";
-            }
-            time_string += fmt!("%?.", seconds);
-        }
-        time_string += fmt!("%.5?", nanoseconds);
-
-        if minutes > 0 {
-            time_string += " min";
-        } else if seconds > 0 {
-            time_string += " sec";
-        } else {
-            time_string += " ns";
-        }
-
-        //time_string += fmt!(" (%?)", total_time);
-        
-        return time_string;
-    }
-    pub fn show_time(&mut self) -> () {
-        core::io::println(fmt!("Total time: %s", self.get_time_string()));
-    }
 }
 
 fn ensure_sorted(arr: &[uint]) -> bool {
@@ -80,30 +131,3 @@ fn ensure_sorted(arr: &[uint]) -> bool {
     true
 }
 
-pub fn run(num: uint, sort: ~fn(&mut [uint])) -> () {
-    let mut timer = Timer::new();
-    let mut vals = generate_random_array(num);
-
-    /* Run the sort and record the timing */
-    core::io::println("Starting sort ...");
-
-    timer.start();
-    sort(vals);
-    timer.end();
-
-    core::io::println("Sort finished, verifying ...");
-
-    /* Check that it actually is sorted */
-    if !ensure_sorted(vals) {
-        /* Print the values so we can see what they actually look like.
-           Note: Should probably only do this if the array is small */
-        for vals.each |v| {
-            core::io::println(fmt!("%?", *v as uint));
-        }
-        fail!("Array was not sorted correctly");
-    }
-
-    /* Show the time it took */
-    core::io::println("Sort was correct.");
-    timer.show_time();
-}
