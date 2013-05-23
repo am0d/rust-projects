@@ -19,7 +19,8 @@ pub impl Benchmark {
     fn new () -> Benchmark {
         Benchmark { num_trials: 1, trial_size: 10, quiet: 0, parse_args: true}
     }
-    fn parse_opts(&mut self) -> () {
+    
+    fn parse_opts(&mut self) {
         if self.parse_args {
             let args = os::args();
             let opts = ~[
@@ -63,10 +64,11 @@ pub impl Benchmark {
         }
     }
 
-    fn run(&mut self, sort: ~fn(&mut [uint])) -> () {
+    fn run(&mut self, sort: ~fn(&mut [uint])) {
         self.parse_opts();
         let mut timer = Timer::new();
         let mut trial_number = 0;
+        let mut sort_times = vec::from_elem(self.num_trials, 0);
 
         for self.num_trials.times {
             let mut vals = generate_random_array(self.trial_size);
@@ -91,7 +93,7 @@ pub impl Benchmark {
                 /* Print the values so we can see what they actually look like.
                    Note: Should probably only do this if the array is small */
                 for vals.each |v| {
-                    core::io::println(fmt!("%?", *v as uint));
+                    debug!("%?", *v as uint);
                 }
                 fail!(fmt!("Trial %?: Array was not sorted correctly", trial_number));
             }
@@ -105,17 +107,27 @@ pub impl Benchmark {
                 0 => { timer.show_time(); }
                 _ => {}
             }
+            /* Record the time it took */
+            sort_times[trial_number] = timer.get_total_time();
+
             trial_number += 1;
         }
+
+        /* Print out the average time at the end */
+        let total_time = do iter::sum |f| { sort_times.each(f) };
+        let average_time = total_time / (self.num_trials as u64);
+        io::println(fmt!("Average time: %s", timer::format_as_time(average_time)));
     }
 }
 
 pub fn generate_random_array(size: uint) -> ~[uint] {
-    let ret = vec::build_sized(size, |push| {
-                               for size.times {
-                                    push(rand::random());
-                               }
-                               });
+    let ret = vec::build_sized(size, 
+                    |push| {
+                        for size.times {
+                            push(rand::random());
+                        }
+                    }
+                    );
 
     return ret;
 }

@@ -1,4 +1,4 @@
-/* Sample bubble sort program in Rust.
+/* Sample swap sort program in Rust.
    Tested to compile with rust-0.6-f1ddb8d.
 */
 extern mod std;
@@ -6,7 +6,7 @@ extern mod benchmark;
 use core::vec;
 use benchmark::Benchmark;
 
-fn bubble_sort(arr: &mut [uint]) -> () {
+fn swap_sort(arr: &mut [uint]) -> () {
     let mut left = 0;
     let mut right: uint;
     let max = arr.len();
@@ -29,5 +29,5 @@ fn bubble_sort(arr: &mut [uint]) -> () {
 
 fn main() {
     let mut bench = Benchmark::new();
-    bench.run(bubble_sort);
+    bench.run(swap_sort);
 }
