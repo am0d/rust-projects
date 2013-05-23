@@ -1,4 +1,5 @@
 extern mod std;
+use core::util::swap;
 
 /* For future reference, if necessary (from pcwalton, #rust, 2012-10-17 20:38)
    basically to allocate something in the same lifetime as yourself, you need to use an arena
@@ -18,49 +19,49 @@ impl Tree {
     fn insert(&self, i: int) {
         let mut node = None;
         if i > self.key {
-            node <-> self.rightTree;
+            swap(node, self.rightTree);
             match node {
                 Some(ref t) => t.insert(i),
                 None => node = Some(~Tree {leftTree: None, rightTree: None, key: i})
             }
-            node <-> self.rightTree;
+            swap(node, self.rightTree);
         }
         if i < self.key {
-            node <-> self.leftTree;
+            swap(node, self.leftTree);
             match node {
                 Some (ref t) => t.insert(i),
                 None => node = Some(~Tree {leftTree: None, rightTree: None, key: i})
             }
-            node <-> self.leftTree;
+            swap(node, self.leftTree);
         }
     }
 
-    fn insertTree(&self, t: &self/Tree) {
+    fn insertTree(&self, t: &Tree) {
         if self.key == t.key {
             let mut node = None;
-            node <-> t.leftTree;
+            swap(node, t.leftTree);
             match node {
                 Some (ref lt) => {
                     let mut leftTree = None;
-                    leftTree <-> self.leftTree;
+                    swap(leftTree, self.leftTree);
                     match leftTree {
                         Some (ref slt) => slt.insertTree(*lt),
                         None => leftTree = Some (copy *lt)
                     };
-                    leftTree <-> self.leftTree;
+                    swap(leftTree, self.leftTree);
                 },
                 None => ()
             };
-            node <-> t.rightTree;
+            swap(node, t.rightTree);
             match node {
                 Some (ref rt) => {
                     let mut rightTree = None;
-                    rightTree <-> self.rightTree;
+                    swap(rightTree, self.rightTree);
                     match rightTree {
                         Some (ref srt) => srt.insertTree(*rt),
                         None => rightTree = Some (copy *rt)
                     };
-                    rightTree <-> self.rightTree;
+                    swap(rightTree, self.rightTree);
                 },
                 None => ()
             };
@@ -68,10 +69,10 @@ impl Tree {
     }
 
     fn delete(&self, key: int) {
-        assert self.key != key;
+        assert!(self.key != key);
 
         let mut node = None;
-        node <-> self.leftTree;
+        swap(node, self.leftTree);
         match node {
             Some (ref t) => {
                 if t.key == key {
@@ -79,18 +80,18 @@ impl Tree {
 
                     // need to remove the left tree root
                     let mut tlt = None;
-                    tlt <-> t.leftTree;
+                    swap(tlt, t.leftTree);
                     self.leftTree = tlt;
 
                     // and the right tree root
                     let mut trt = None;
-                    trt <-> t.rightTree;
+                    swap(trt, t.rightTree);
                     match trt {
                         Some (ref tr) => {
                             // the deleted node has a right tree
                             // we need to insert that into self.rightTree
                             let mut srt = None;
-                            srt <-> self.rightTree;
+                            swap(srt, self.rightTree);
                             match srt {
                                 Some (ref rt) => rt.insertTree(*tr),
                                 None => self.rightTree = tlt
@@ -117,10 +118,10 @@ impl Tree {
                 ()
             }
         };
-        node <-> self.leftTree; 
+        swap(node, self.leftTree); 
             
         node = None;
-        node <-> self.rightTree;
+        swap(node, self.rightTree);
         match node {
             Some (ref t) => {
                 if t.key == key {
@@ -128,18 +129,18 @@ impl Tree {
 
                     // need to remove the right tree root
                     let mut trt = None;
-                    trt <-> t.rightTree;
+                    swap(trt, t.rightTree);
                     self.rightTree = trt;
 
                     // and the left tree root
                     let mut tlt = None;
-                    tlt <-> t.leftTree;
+                    swap(tlt, t.leftTree);
                     match tlt {
                         Some (ref tl) => {
                             // the deleted node has a left tree
                             // we need to insert that into self.leftTree
                             let mut slt = None;
-                            slt <-> self.leftTree;
+                            swap(slt, self.leftTree);
                             match slt {
                                 Some (ref lt) => lt.insertTree(*tl),
                                 None => self.leftTree = tlt
@@ -170,10 +171,10 @@ impl Tree {
                 ()
             }
         };
-        node <-> self.rightTree; 
+        swap(node, self.rightTree); 
     }
 
-    pure fn treeDepth (&self) -> int {
+    fn treeDepth (&self) -> int {
         let leftCount = match self.leftTree {
             Some (ref t) => t.treeDepth(),
             None => 0
@@ -185,7 +186,7 @@ impl Tree {
         1 + int::max(leftCount, rightCount)
     }
 
-    pure fn contains(i: int) -> bool {
+    fn contains(&self, i: int) -> bool {
         if i == self.key {
             return true;
         }
@@ -204,34 +205,34 @@ impl Tree {
         }
     }
 
-    fn print() {
+    fn print(&self) {
         let mut node = None;
-        node <-> self.leftTree;
+        swap(node, self.leftTree);
         match node {
             Some(ref t) => t.print(),
             None => ()
         };
-        node <-> self.leftTree;
+        swap(node, self.leftTree);
 
         io::print(fmt!("%d ", self.key));
 
-        node <-> self.rightTree;
+        swap(node, self.rightTree);
         match node {
             Some(ref t) => t.print(),
             None => ()
         };
-        node <-> self.rightTree;
+        swap(node, self.rightTree);
     }
 }
 
-impl Tree: ToStr {
-    pure fn to_str() -> ~str {
+impl ToStr for Tree {
+    fn to_str(&self) -> ~str {
         return fmt!("%d", self.key);
     }
 }
 
 fn fillTreeRandom (tree: &Tree, numNodes: int) {
-    let r = rand::Rng();
+    let r = core::rand::rng();
     for int::range(0, numNodes) |_index| {
         tree.insert(r.gen_int_range(0, numNodes));
     }
