@@ -10,4 +10,4 @@ libtimer: timer.rs
 	rustc --lib timer.rs
 
 clean:
-	rm libbenchmark* swap-sort
+	rm *.so *-sort
