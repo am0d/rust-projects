@@ -1,6 +1,6 @@
 #[allow(non_implicitly_copyable_typarams)];
 
-use io::{Writer,WriterUtil,Reader,ReaderUtil};
+use core::io::{Writer,WriterUtil,Reader,ReaderUtil};
 use url=std::net_url;
 use std::net::url::*;
 use ip=std::net_ip;
@@ -30,16 +30,16 @@ impl Request {
         let ip_address = {
             let ip_address = get_ip_address(self.url);
             if ip_address.is_ok() {
-                result::unwrap(move ip_address)
+                result::unwrap(ip_address)
             } else {
                 return ~""
             }
         };
 
         let connection = {
-            let connection = socket::connect(move ip_address, 80, uv_global_loop::get());
+            let connection = socket::connect(ip_address, 80, uv_global_loop::get());
             if connection.is_ok() {
-                socket::socket_buf(result::unwrap(move connection))
+                socket::socket_buf(result::unwrap(connection))
             } else {
                 return ~""
             }
@@ -58,7 +58,7 @@ impl Request {
             if str::trim_chars(line, ['\r', ' ']).is_empty() {
                 end_of_header = true;
             }
-            headers = str::concat([move headers, ~"\n", move line]);
+            headers = str::concat([headers, ~"\n", line]);
         }
         debug!("%s", headers);
         self.headers.parse(headers);
@@ -67,7 +67,7 @@ impl Request {
             302 => {
                 io::println(fmt!("Redirecting to %s", self.headers.get_header(~"Location")));
                 let new_url = url::from_str(self.headers.get_header(~"Location")).get();
-                self.url = move new_url;
+                self.url = new_url;
                 self.headers = headers::HttpHeaderCollection();
                 debug!("Getting now ...");
                 return self.get()
@@ -79,10 +79,10 @@ impl Request {
                 while !reader.eof() {
                     let line = reader.read_line();
                     debug!("%s", line);
-                    response = str::concat([move response, ~"\n", move line]);
+                    response = str::concat([response, ~"\n", line]);
                 }
                 debug!("Got response");
-                self.response_text = Some(move response);
+                self.response_text = Some(response);
             }
         }
         ~""
@@ -118,7 +118,7 @@ fn build_request(url: Url) -> ~str {
     let request_header = fmt!("GET %s HTTP/1.0\u000D\u000AHost: %s\u000D\u000AUser-Agent: rust::requests\u000D\u000A\u000D\u000A",
             path, host);
 
-    return move request_header;
+    return request_header;
 }
 
 fn get_ip_address (url: Url) -> Result<IpAddr, ~str> {
@@ -126,9 +126,9 @@ fn get_ip_address (url: Url) -> Result<IpAddr, ~str> {
 
     if resolution.is_ok() {
         debug!("Host resolution successful");
-        let ip_addrs = result::unwrap(move resolution);
+        let ip_addrs = result::unwrap(resolution);
         if ip_addrs.is_not_empty() {
-            let best_ip = do (move ip_addrs).find |ip| {
+            let best_ip = do (ip_addrs).find |ip| {
                 match ip {
                     Ipv4(*) => { true }
                     Ipv6(*) => { false }
@@ -136,7 +136,7 @@ fn get_ip_address (url: Url) -> Result<IpAddr, ~str> {
             };
 
             if best_ip.is_some() {
-                return Ok(option::unwrap(move best_ip));
+                return Ok(option::unwrap(best_ip));
             } else {
                 return Err(~"No suitable ip address to resolve to");
             }

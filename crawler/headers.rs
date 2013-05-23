@@ -1,6 +1,7 @@
 #[allow(non_implicitly_copyable_typarams)];
 
-use send_map::linear;
+extern mod std;
+use std::send_map::linear;
 use send_map::linear::LinearMap;
 
 pub struct HttpHeaderCollection {
@@ -28,7 +29,7 @@ impl HttpHeaderCollection {
             // XXX is the status code, and ... is the status description
             debug!("Response header: %s", first_line);
             let parts = str::split_char(first_line, ' ');
-            assert vec::len(parts) > 2;
+            assert!(vec::len(parts) > 2);
             let status_code = int::from_str(parts[1]);
             match status_code {
                 Some(s) => {
@@ -65,7 +66,7 @@ impl HttpHeaderCollection {
                 if self.header_collection.contains_key(&parts[0]) {
                     let mut values = self.header_collection.get(&parts[0]);
                     values = vec::append_one(values, copy parts[1]);
-                    self.header_collection.insert(copy parts[0], move values);
+                    self.header_collection.insert(copy parts[0], values);
                 }
                 else {
                     self.header_collection.insert(copy parts[0], ~[copy parts[1]]);
@@ -107,6 +108,6 @@ impl HttpHeaderCollection {
             });
             true
         }
-        move header_string
+        header_string
     }
 }
