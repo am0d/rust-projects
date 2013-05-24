@@ -8,8 +8,7 @@ The following sorting benchmarks have been implemented so far (I'm starting with
 #### Command line flags supported
 Each of the benchmark applications supports the following flags:
 * `q` - Quiet operation (less information printed about each test)
-* `qq` - Extra quite operation
-* `qqq` - No information printed while running the tests
+* `qq` - No information printed while running the tests
 * `trialsize` - The number of elements to be sorted in the benchmark
 * `numtrials` - The number of trials to run
 
