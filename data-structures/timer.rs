@@ -1,7 +1,13 @@
-#[link(name = "timer", vers = "0.1")]
-#[crate_type = "lib"]
+#[link(name = "timer",
+       vers = "0.1",
+       author = "Damien Schoof")];
+#[crate_type = "lib"];
 
 extern mod std;
+
+static SEC_MULTIPLIER:u64 = 1000 * 1000 * 1000;
+static MIN_MULTIPLIER:u64 = 60 * SEC_MULTIPLIER;
+static HR_MULTIPLIER:u64 = 60 * MIN_MULTIPLIER;
 
 pub struct Timer {
     mut start_time: u64,
@@ -30,19 +36,31 @@ pub impl Timer {
 }
 
 pub fn format_as_time(total_time: u64) -> ~str {
-    let MIN_MULTIPLIER:u64 = 60 * 1000 * 1000 * 1000;
-    let SEC_MULTIPLIER:u64 = 1000 * 1000 * 1000;
-
-    let minutes = total_time / MIN_MULTIPLIER;
-    let seconds = (total_time - minutes * MIN_MULTIPLIER) / SEC_MULTIPLIER;
-    let nanoseconds = (total_time - minutes * MIN_MULTIPLIER - seconds * SEC_MULTIPLIER);
+    let hours = total_time / HR_MULTIPLIER;
+    let minutes = (total_time 
+                   - hours * HR_MULTIPLIER) 
+        / MIN_MULTIPLIER;
+    let seconds = (total_time 
+                   - hours * HR_MULTIPLIER 
+                   - minutes * MIN_MULTIPLIER) 
+        / SEC_MULTIPLIER;
+    let nanoseconds = (total_time 
+                       - hours * HR_MULTIPLIER 
+                       - minutes * MIN_MULTIPLIER 
+                       - seconds * SEC_MULTIPLIER);
 
     let mut time_string = ~"";
-    if minutes > 0 {
+    if hours > 0 {
+        time_string += fmt!("%?:", hours);
+    }
+    if hours > 0 || minutes > 0 {
+        if minutes < 10 && hours > 0 {
+            time_string += "0";
+        }
         time_string += fmt!("%?:", minutes);
     }
-    if minutes > 0 || seconds > 0 {
-        if seconds < 10 && minutes > 0 {
+    if hours > 0 || minutes > 0 || seconds > 0 {
+        if seconds < 10 && (minutes > 0 || hours > 0) {
             // HACK: fmt!("%02?.", seconds) doesn't zero pad
             time_string += "0";
         }
@@ -53,7 +71,9 @@ pub fn format_as_time(total_time: u64) -> ~str {
         time_string += fmt!("%s", format_number(nanoseconds));
     }
 
-    if minutes > 0 {
+    if hours > 0 {
+        time_string += " hr";
+    } else if minutes > 0 {
         time_string += " min";
     } else if seconds > 0 {
         time_string += " sec";
@@ -82,4 +102,28 @@ fn format_number(num: u64) -> ~str {
     }
 
     return ret_val
+}
+
+#[test]
+fn format_number_test() {
+    let num1 = 123456789;
+    let num2 = 12345678;
+    let num3 = 1234;
+
+    assert!(format_number(num1) == ~"123,456,789");
+    assert!(format_number(num2) == ~"12,345,678");
+    assert!(format_number(num3) == ~"1,234");
+}
+
+#[test]
+fn format_as_time_test() {
+    let num1 = 2000;    // ns
+    let num2 = 3 * SEC_MULTIPLIER + 141591234;
+    let num3 = 1 * MIN_MULTIPLIER + 5 * SEC_MULTIPLIER + 1234;
+    let num4 = 3 * HR_MULTIPLIER + num3;
+
+    assert!(format_as_time(num1) == ~"2,000 ns");
+    assert!(format_as_time(num2) == ~"3.14159 sec");
+    assert!(format_as_time(num3) == ~"1:05.1234 min");
+    assert!(format_as_time(num4) == ~"3:01:05.1234 hr");
 }

@@ -1,5 +1,5 @@
-#[link(name = "benchmark", vers = "0.1")]
-#[crate_type = "lib"]
+#[link(name = "benchmark", vers = "0.1")];
+#[crate_type = "lib"];
 
 extern mod std;
 extern mod timer;
