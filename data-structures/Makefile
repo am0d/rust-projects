@@ -1,10 +1,13 @@
-all: swap-sort bubble-sort
+all: swap-sort bubble-sort selection-sort
 
 swap-sort: libbenchmark swap-sort.rs
 	rustc swap-sort.rs -L .
 
 bubble-sort: libbenchmark bubble-sort.rs
 	rustc bubble-sort.rs -L .
+
+selection-sort: libbenchmark selection-sort.rs
+	rustc selection-sort.rs -L .
 
 libbenchmark: benchmark.rs libtimer
 	rustc --lib benchmark.rs -L .
