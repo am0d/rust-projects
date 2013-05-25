@@ -3,7 +3,7 @@
        author = "Damien Schoof")];
 #[crate_type = "lib"];
 
-extern mod std;
+extern mod extra;
 
 static SEC_MULTIPLIER:u64 = 1000 * 1000 * 1000;
 static MIN_MULTIPLIER:u64 = 60 * SEC_MULTIPLIER;
@@ -19,10 +19,10 @@ pub impl Timer {
         Timer { start_time: 0, end_time: 0}
     }
     pub fn start(&mut self) -> () {
-        self.start_time = std::time::precise_time_ns();
+        self.start_time = extra::time::precise_time_ns();
     }
     pub fn end(&mut self) -> () {
-        self.end_time = std::time::precise_time_ns();
+        self.end_time = extra::time::precise_time_ns();
     }
     fn get_time_string(&mut self) -> ~str {
         return format_as_time(self.get_total_time());
@@ -31,7 +31,7 @@ pub impl Timer {
         return self.end_time - self.start_time;
     }
     pub fn show_time(&mut self) -> () {
-        core::io::println(fmt!("Total time: %s", self.get_time_string()));
+        std::io::println(fmt!("Total time: %s", self.get_time_string()));
     }
 }
 

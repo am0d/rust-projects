@@ -1,9 +1,9 @@
 /* Sample selection sort program in Rust.
    Tested to compile with rust-0.6.
 */
-extern mod std;
+extern mod extra;
 extern mod benchmark;
-use core::vec;
+use std::vec;
 use benchmark::Benchmark;
 
 fn selection_sort(arr: &mut [uint]) -> () {

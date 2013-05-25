@@ -1,11 +1,11 @@
 #[link(name = "benchmark", vers = "0.1")];
 #[crate_type = "lib"];
 
-extern mod std;
+extern mod extra;
 extern mod timer;
-use core::rand;
-use core::vec;
-use std::getopts::*;
+use std::rand;
+use std::vec;
+use extra::getopts::*;
 use timer::Timer;
 
 struct Benchmark {
@@ -74,8 +74,8 @@ pub impl Benchmark {
             let mut vals = generate_random_array(self.trial_size);
             /* Run the sort and record the timing */
             match self.quiet {
-                0 => { core::io::println("Starting sort ..."); }
-                1 => { core::io::println(fmt!("Trial %?", trial_number)); }
+                0 => { std::io::println("Starting sort ..."); }
+                1 => { std::io::println(fmt!("Trial %?", trial_number)); }
                 _ => {}
             }
 
@@ -84,7 +84,7 @@ pub impl Benchmark {
             timer.end();
 
             match self.quiet {
-                0 => { core::io::println("Sort finished, verifying ..."); }
+                0 => { std::io::println("Sort finished, verifying ..."); }
                 _ => {}
             }
 
@@ -99,7 +99,7 @@ pub impl Benchmark {
             }
 
             match self.quiet {
-                0 => { core::io::println("Sort was correct."); }
+                0 => { std::io::println("Sort was correct."); }
                 _ => {}
             }
             /* Show the time it took */

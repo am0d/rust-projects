@@ -1,9 +1,9 @@
 /* Sample swap sort program in Rust.
    Tested to compile with rust-0.6-f1ddb8d.
 */
-extern mod std;
+extern mod extra;
 extern mod benchmark;
-use core::vec;
+use std::vec;
 use benchmark::Benchmark;
 
 fn swap_sort(arr: &mut [uint]) -> () {
