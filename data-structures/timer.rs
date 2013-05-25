@@ -66,7 +66,8 @@ pub fn format_as_time(total_time: u64) -> ~str {
         }
         time_string += fmt!("%?.", seconds);
         // nanoseconds don't need to be quite as accurate if we measure seconds
-        time_string += fmt!("%.3?", nanoseconds);
+        let ns_as_string = fmt!("%.5?", (nanoseconds as f64) / (SEC_MULTIPLIER as f64));
+        time_string += fmt!("%s", str::slice(ns_as_string, 2, 5));
     } else {
         time_string += fmt!("%s", format_number(nanoseconds));
     }
@@ -123,7 +124,7 @@ fn format_as_time_test() {
     let num4 = 3 * HR_MULTIPLIER + num3;
 
     assert!(format_as_time(num1) == ~"2,000 ns");
-    assert!(format_as_time(num2) == ~"3.142 sec");
-    assert!(format_as_time(num3) == ~"1:05.099 min");
-    assert!(format_as_time(num4) == ~"3:01:05.099 hr");
+    assert!(format_as_time(num2) == ~"3.141 sec");
+    assert!(format_as_time(num3) == ~"1:05.098 min");
+    assert!(format_as_time(num4) == ~"3:01:05.098 hr");
 }
