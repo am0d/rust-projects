@@ -1,13 +1,15 @@
+RUST_FLAGS = -L . -O
+
 all: swap-sort bubble-sort selection-sort
 
 swap-sort: libbenchmark swap-sort.rs
-	rustc swap-sort.rs -L .
+	rustc $(RUST_FLAGS) swap-sort.rs
 
 bubble-sort: libbenchmark bubble-sort.rs
-	rustc bubble-sort.rs -L .
+	rustc $(RUST_FLAGS) bubble-sort.rs
 
 selection-sort: libbenchmark selection-sort.rs
-	rustc selection-sort.rs -L .
+	rustc $(RUST_FLAGS) selection-sort.rs
 
 libbenchmark: benchmark.rs libtimer
 	rustc --lib benchmark.rs -L .
