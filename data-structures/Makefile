@@ -12,10 +12,10 @@ selection-sort: libbenchmark selection-sort.rs
 	rustc $(RUST_FLAGS) selection-sort.rs
 
 libbenchmark: benchmark.rs libtimer
-	rustc --lib benchmark.rs -L .
+	rustc $(RUST_FLAGS) benchmark.rs
 
 libtimer: timer.rs
-	rustc --lib timer.rs
+	rustc $(RUST_FLAGS) timer.rs
 
 clean:
 	rm *.so *-sort

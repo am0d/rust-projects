@@ -12,12 +12,19 @@ struct Benchmark {
     mut num_trials: uint,
     mut trial_size: uint,
     mut quiet: u8,
-    mut parse_args: bool
+    mut parse_args: bool,
+    mut verify: bool
 }
 
 pub impl Benchmark {
     fn new () -> Benchmark {
-        Benchmark { num_trials: 1, trial_size: 10, quiet: 0, parse_args: true}
+        Benchmark { 
+            num_trials: 1, 
+            trial_size: 10, 
+            quiet: 0, 
+            parse_args: true,
+            verify: false
+        }
     }
     
     fn parse_opts(&mut self) {
@@ -27,7 +34,8 @@ pub impl Benchmark {
                 optflagmulti("q"),
                 optflag("quiet"),
                 optopt("trialsize"),
-                optopt("numtrials")
+                optopt("numtrials"),
+                optflag("verify")
                 ];
             let matches = match getopts(vec::tail(args), opts) {
                 result::Ok(m) => { m }
@@ -38,6 +46,9 @@ pub impl Benchmark {
                 if self.quiet < 1{
                     self.quiet = 1;
                 }
+            }
+            if opt_present(&matches, "verify") {
+                self.verify = true;
             }
 
             match opt_maybe_str(&matches, "trialsize") {
@@ -88,14 +99,16 @@ pub impl Benchmark {
                 _ => {}
             }
 
-            /* Check that it actually is sorted */
-            if !ensure_sorted(vals) {
-                /* Print the values so we can see what they actually look like.
-                   Note: Should probably only do this if the array is small */
-                for vals.each |v| {
-                    debug!("%?", *v as uint);
+            if self.verify {
+                /* Check that it actually is sorted */
+                if !ensure_sorted(vals) {
+                    /* Print the values so we can see what they actually look like.
+                       Note: Should probably only do this if the array is small */
+                    for vals.each |v| {
+                        debug!("%?", *v as uint);
+                    }
+                    fail!(fmt!("Trial %?: Array was not sorted correctly", trial_number));
                 }
-                fail!(fmt!("Trial %?: Array was not sorted correctly", trial_number));
             }
 
             match self.quiet {
