@@ -95,12 +95,16 @@ pub impl Benchmark {
             timer.end();
 
             match self.quiet {
-                0 => { std::io::println("Sort finished, verifying ..."); }
+                0 => { io::println("Sort finished."); }
                 _ => {}
             }
 
             if self.verify {
                 /* Check that it actually is sorted */
+                match self.quiet {
+                    0 => { std::io::println("Verifying sort ..."); }
+                    _ => {}
+                }
                 if !ensure_sorted(vals) {
                     /* Print the values so we can see what they actually look like.
                        Note: Should probably only do this if the array is small */
@@ -109,12 +113,12 @@ pub impl Benchmark {
                     }
                     fail!(fmt!("Trial %?: Array was not sorted correctly", trial_number));
                 }
+                match self.quiet {
+                    0 => { std::io::println("Sort was correct."); }
+                    _ => {}
+                }
             }
 
-            match self.quiet {
-                0 => { std::io::println("Sort was correct."); }
-                _ => {}
-            }
             /* Show the time it took */
             match self.quiet {
                 0 => { timer.show_time(); }

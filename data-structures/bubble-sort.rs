@@ -6,7 +6,7 @@ extern mod benchmark;
 use std::vec;
 use benchmark::Benchmark;
 
-fn bubble_sort(arr: &mut [uint]) -> () {
+fn bubble_sort<T:Ord>(arr: &mut [T]) {
     let mut left: uint;
     let mut right: uint = arr.len() - 1;
     let mut swap_occurred = true;

@@ -6,7 +6,7 @@ extern mod benchmark;
 use std::vec;
 use benchmark::Benchmark;
 
-fn selection_sort(arr: &mut [uint]) -> () {
+fn selection_sort<T:Ord>(arr: &mut [T]) {
     let mut left: uint = 0;
     let mut right: uint;
     let max = arr.len() - 1;
