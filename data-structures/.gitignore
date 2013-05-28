@@ -2,5 +2,6 @@
 *.so
 binary-tree
 *-sort
+*-sort-par
 timer
 benchmark
