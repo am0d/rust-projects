@@ -1,6 +1,6 @@
 RUST_FLAGS = -L . -O
 
-all: swap-sort bubble-sort selection-sort
+all: swap-sort bubble-sort selection-sort merge-sort
 
 swap-sort: libbenchmark swap-sort.rs
 	rustc $(RUST_FLAGS) swap-sort.rs
@@ -11,6 +11,9 @@ bubble-sort: libbenchmark bubble-sort.rs
 selection-sort: libbenchmark selection-sort.rs
 	rustc $(RUST_FLAGS) selection-sort.rs
 
+merge-sort: libbenchmark merge-sort.rs
+	rustc $(RUST_FLAGS) merge-sort.rs
+
 libbenchmark: benchmark.rs libtimer
 	rustc $(RUST_FLAGS) benchmark.rs
 
@@ -18,4 +21,4 @@ libtimer: timer.rs
 	rustc $(RUST_FLAGS) timer.rs
 
 clean:
-	rm *.so *-sort
+	rm -f *.so *-sort

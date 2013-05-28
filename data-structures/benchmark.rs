@@ -75,14 +75,14 @@ pub impl Benchmark {
         }
     }
 
-    fn run(&mut self, sort: ~fn(&mut [uint])) {
+    fn run(&mut self, sort: ~fn(~[uint])->~[uint]) {
         self.parse_opts();
         let mut timer = Timer::new();
         let mut trial_number = 0;
         let mut sort_times = vec::from_elem(self.num_trials, 0);
 
         for self.num_trials.times {
-            let mut vals = generate_random_array(self.trial_size);
+            let vals = generate_random_array(self.trial_size);
             /* Run the sort and record the timing */
             match self.quiet {
                 0 => { std::io::println("Starting sort ..."); }
@@ -91,7 +91,7 @@ pub impl Benchmark {
             }
 
             timer.start();
-            sort(vals);
+            let sorted = sort(vals);
             timer.end();
 
             match self.quiet {
@@ -105,11 +105,11 @@ pub impl Benchmark {
                     0 => { std::io::println("Verifying sort ..."); }
                     _ => {}
                 }
-                if !ensure_sorted(vals) {
+                if !ensure_sorted(sorted) {
                     /* Print the values so we can see what they actually look like.
                        Note: Should probably only do this if the array is small */
-                    for vals.each |v| {
-                        debug!("%?", *v as uint);
+                    for sorted.each |v| {
+                        io::println(fmt!("%?", *v as uint));
                     }
                     fail!(fmt!("Trial %?: Array was not sorted correctly", trial_number));
                 }
