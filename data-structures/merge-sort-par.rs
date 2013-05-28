@@ -9,6 +9,10 @@ use std::cell::Cell;
 use benchmark::Benchmark;
 
 fn merge_sort<T:Ord+Copy+Owned>(arr: ~[T]) -> ~[T] {
+    parallel_merge_sort(arr, 0)
+}
+
+fn parallel_merge_sort<T:Ord+Copy+Owned>(arr: ~[T], depth: uint) -> ~[T] {
     let length = arr.len();
     if length <= 1 {
         return arr.to_owned();
@@ -18,7 +22,6 @@ fn merge_sort<T:Ord+Copy+Owned>(arr: ~[T]) -> ~[T] {
     let mut left: ~[T] = vec::from_elem(middle, copy arr[0]);
     let mut right: ~[T] = vec::from_elem(length - middle, copy arr[0]);
     let mut index = 0;
-
 
     while index < middle {
         left[index] = arr[index];
@@ -30,15 +33,20 @@ fn merge_sort<T:Ord+Copy+Owned>(arr: ~[T]) -> ~[T] {
         index += 1;
     }
 
-    let (port, chan): (Port<~[T]>, Chan<~[T]>) = stream();
-    let left_cell = Cell(left);
-    do spawn {
-        let sorted_left =  merge_sort(left_cell.take());
-        chan.send(sorted_left);
-    }
-    right = merge_sort(right);
+    if depth < 8 {
+        let (port, chan): (Port<~[T]>, Chan<~[T]>) = stream();
+        let left_cell = Cell(left);
+        do spawn {
+            let sorted_left =  parallel_merge_sort(left_cell.take(), depth + 1);
+            chan.send(sorted_left);
+        }
+        right = parallel_merge_sort(right, depth + 1);
 
-    left = port.recv();
+        left = port.recv();
+    } else {
+        left = parallel_merge_sort(left, depth);
+        right = parallel_merge_sort(right, depth);
+    }
 
     merge(left, right)
 }
