@@ -8,7 +8,7 @@ use std::comm::{stream, Chan, Port};
 use std::cell::Cell;
 use benchmark::Benchmark;
 
-fn merge_sort<T:Ord+Copy+Owned>(arr: ~[T]) -> ~[T] {
+fn parallel_merge_sort_helper<T:Ord+Copy+Owned>(arr: ~[T]) -> ~[T] {
     parallel_merge_sort(arr, 0)
 }
 
@@ -19,24 +19,15 @@ fn parallel_merge_sort<T:Ord+Copy+Owned>(arr: ~[T], depth: uint) -> ~[T] {
     }
 
     let middle = length / 2;
-    let mut left: ~[T] = vec::from_elem(middle, copy arr[0]);
-    let mut right: ~[T] = vec::from_elem(length - middle, copy arr[0]);
-    let mut index = 0;
-
-    while index < middle {
-        left[index] = arr[index];
-        index += 1;
-    }
-
-    while index < length {
-        right[index - middle] = arr[index];
-        index += 1;
-    }
+    let mut left = vec::to_owned(vec::slice(arr, 0, middle));
+    let mut right = vec::to_owned(vec::slice(arr, middle, length));
 
     if depth < 8 {
+        /* Create channel to pass the results back */
         let (port, chan): (Port<~[T]>, Chan<~[T]>) = stream();
-        let left_cell = Cell(left);
+        let left_cell = Cell(left); // the only way to access the above mutable field
         do spawn {
+            // take the ref out of the cell, sort it, and send it back to the parent process
             let sorted_left =  parallel_merge_sort(left_cell.take(), depth + 1);
             chan.send(sorted_left);
         }
@@ -78,6 +69,6 @@ fn merge<T:Ord+Copy>(left_orig: ~[T], right_orig: ~[T]) -> ~[T] {
 
 fn main() {
     let mut bench = Benchmark::new();
-    bench.run(merge_sort);
+    bench.run(parallel_merge_sort_helper);
 }
 

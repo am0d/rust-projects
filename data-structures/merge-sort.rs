@@ -13,20 +13,8 @@ fn merge_sort<T:Ord+Copy>(arr: ~[T]) -> ~[T] {
     }
 
     let middle = length / 2;
-    let mut left: ~[T] = vec::from_elem(middle, copy arr[0]);
-    let mut right: ~[T] = vec::from_elem(length - middle, copy arr[0]);
-    let mut index = 0;
-
-
-    while index < middle {
-        left[index] = arr[index];
-        index += 1;
-    }
-
-    while index < length {
-        right[index - middle] = arr[index];
-        index += 1;
-    }
+    let mut left = vec::to_owned(vec::slice(arr, 0, middle));
+    let mut right = vec::to_owned(vec::slice(arr, middle, length));
 
     left = merge_sort(left);
     right = merge_sort(right);
