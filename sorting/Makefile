@@ -3,9 +3,10 @@ RUST_FLAGS = -L . -O
 LIBS := benchmark timer
 
 ALL_SOURCES := $(wildcard *.rs)
+BINARIES := $(ALL_SOURCES:.rs=)
+
 ALL_BINARIES := $(BINARIES) $(ALL_SOURCES:%.rs=lib%)
 
-BINARIES := $(ALL_SOURCES:.rs=)
 BINARIES := $(filter-out $(LIBS), $(BINARIES))
 
 
