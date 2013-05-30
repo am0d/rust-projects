@@ -5,3 +5,6 @@ binary-tree
 *-sort-par
 timer
 benchmark
+lib*
+
+!*.rs

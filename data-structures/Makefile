@@ -1,4 +1,7 @@
 RUST_FLAGS = -L . -O
+ALL_SOURCES := $(wildcard *.rs)
+BINARIES := $(ALL_SOURCES:.rs=)
+BINARIES += $(ALL_SOURCES:%.rs=lib%)
 
 all: swap-sort bubble-sort selection-sort merge-sort merge-sort-par
 
@@ -19,9 +22,14 @@ merge-sort-par: libbenchmark merge-sort-par.rs
 
 libbenchmark: benchmark.rs libtimer
 	rustc $(RUST_FLAGS) benchmark.rs
+	@#rustc $(RUST_FLAGS) --test -o $@ $<
+	@touch $@
 
 libtimer: timer.rs
 	rustc $(RUST_FLAGS) timer.rs
+	@#rustc $(RUST_FLAGS) --test -o $@ $<
+	@touch $@
 
 clean:
-	rm -f *.so *-sort
+	@echo "Cleaning ..."
+	@rm -f *.so $(BINARIES)
