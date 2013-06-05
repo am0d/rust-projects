@@ -1,4 +1,5 @@
 use std::Option;
+use std::ptr;
 
 struct Tree<T> {
     root: Option<~Node<T>>
@@ -6,6 +7,7 @@ struct Tree<T> {
 pub struct Node<T> {
     left_child: Option<~Node<T>>,
     right_child: Option<~Node<T>>,
+    parent: Option<*const Node<T>>,
     key: T
 }
 
@@ -14,6 +16,7 @@ impl<T:Ord> Node<T> {
         Node {
             left_child: None,
             right_child: None,
+            parent: None,
             key: nodeKey
         }
     }
@@ -27,9 +30,10 @@ impl<T:Ord> Node<T> {
         }
     }
 
-    fn add_right_child(&mut self, new_node: ~Node<T>) {
+    fn add_right_child(&mut self, mut new_node: ~Node<T>) {
         match self.right_child {
             None => {
+                new_node.parent = Some(ptr::to_const_unsafe_ptr(self));
                 self.right_child = Some(new_node);
             },
             Some(ref mut right_child) => {
@@ -38,9 +42,10 @@ impl<T:Ord> Node<T> {
         }
     }
 
-    fn add_left_child(&mut self, new_node: ~Node<T>) {
+    fn add_left_child(&mut self, mut new_node: ~Node<T>) {
         match self.left_child {
             None => {
+                new_node.parent = Some(ptr::to_const_unsafe_ptr(self));
                 self.left_child = Some(new_node);
             },
             Some(ref mut left_child) => {
