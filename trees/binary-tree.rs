@@ -60,6 +60,24 @@ impl<T:Ord> Node<T> {
             }
         }
     }
+
+    pub fn visit_in_order(&self, visitor: &fn(&Node<T>)) {
+        match self.left_child {
+            Some (ref n) => {
+                n.visit_in_order(visitor);
+            },
+            _ => {}
+        }
+        
+        visitor(self);
+
+        match self.right_child {
+            Some (ref n) => {
+                n.visit_in_order(visitor);
+            },
+            _ => {}
+        }
+    }
 }
 
 pub impl<T:Ord> Tree<T> {
@@ -84,6 +102,16 @@ pub impl<T:Ord> Tree<T> {
             }
         }
     }
+
+    fn visit_in_order (&self, visitor: &fn(&Node<T>)) {
+        match self.root {
+            Some(ref n) => {
+                n.visit_in_order(visitor);
+            },
+            _ => {
+            }
+        }
+    }
 }
 
 fn main () {
@@ -92,4 +120,9 @@ fn main () {
     myTree.insert_value(3);
     myTree.insert_value(2);
     myTree.insert_value(4);
+    myTree.insert_value(0);
+
+    myTree.visit_in_order(|n| {
+                          std::io::println(fmt!("%d", n.key));
+                          });
 }
