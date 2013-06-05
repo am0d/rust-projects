@@ -25,7 +25,7 @@ fn parallel_merge_sort<T:Ord+Copy+Owned>(arr: ~[T], depth: uint) -> ~[T] {
     if depth < 8 {
         /* Create channel to pass the results back */
         let (port, chan): (Port<~[T]>, Chan<~[T]>) = stream();
-        let left_cell = Cell(left); // the only way to access the above mutable field
+        let left_cell = Cell::new(left); // the only way to access the above mutable field
         do spawn {
             // take the ref out of the cell, sort it, and send it back to the parent process
             let sorted_left =  parallel_merge_sort(left_cell.take(), depth + 1);

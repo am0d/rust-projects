@@ -3,17 +3,19 @@
 
 extern mod extra;
 extern mod timer;
+use std::{io, result, os};
+use std::uint;
 use std::rand;
-use std::vec;
+use std::{vec, iter};
 use extra::getopts::*;
 use timer::Timer;
 
 struct Benchmark {
-    mut num_trials: uint,
-    mut trial_size: uint,
-    mut quiet: u8,
-    mut parse_args: bool,
-    mut verify: bool
+    num_trials: uint,
+    trial_size: uint,
+    quiet: u8,
+    parse_args: bool,
+    verify: bool
 }
 
 pub impl Benchmark {

@@ -4,14 +4,15 @@
 #[crate_type = "lib"];
 
 extern mod extra;
+use std::str;
 
 static SEC_MULTIPLIER:u64 = 1000 * 1000 * 1000;
 static MIN_MULTIPLIER:u64 = 60 * SEC_MULTIPLIER;
 static HR_MULTIPLIER:u64 = 60 * MIN_MULTIPLIER;
 
 pub struct Timer {
-    mut start_time: u64,
-    mut end_time: u64
+    start_time: u64,
+    end_time: u64
 }
 
 pub impl Timer {
