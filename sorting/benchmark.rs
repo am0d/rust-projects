@@ -18,8 +18,8 @@ struct Benchmark {
     verify: bool
 }
 
-pub impl Benchmark {
-    fn new () -> Benchmark {
+impl Benchmark {
+    pub fn new () -> Benchmark {
         Benchmark { 
             num_trials: 1, 
             trial_size: 10, 
@@ -77,7 +77,7 @@ pub impl Benchmark {
         }
     }
 
-    fn run(&mut self, sort: ~fn(~[uint])->~[uint]) {
+    pub fn run(&mut self, sort: ~fn(~[uint])->~[uint]) {
         self.parse_opts();
         let mut timer = Timer::new();
         let mut trial_number = 0;

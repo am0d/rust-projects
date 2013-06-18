@@ -4,7 +4,6 @@
 #[crate_type = "lib"];
 
 extern mod extra;
-use std::str;
 
 static SEC_MULTIPLIER:u64 = 1000 * 1000 * 1000;
 static MIN_MULTIPLIER:u64 = 60 * SEC_MULTIPLIER;
@@ -15,7 +14,7 @@ pub struct Timer {
     end_time: u64
 }
 
-pub impl Timer {
+impl Timer {
     pub fn new() -> Timer {
         Timer { start_time: 0, end_time: 0}
     }
@@ -25,10 +24,10 @@ pub impl Timer {
     pub fn end(&mut self) -> () {
         self.end_time = extra::time::precise_time_ns();
     }
-    fn get_time_string(&mut self) -> ~str {
+    pub fn get_time_string(&mut self) -> ~str {
         return format_as_time(self.get_total_time());
     }
-    fn get_total_time(&mut self) -> u64 {
+    pub fn get_total_time(&mut self) -> u64 {
         return self.end_time - self.start_time;
     }
     pub fn show_time(&mut self) -> () {
@@ -68,7 +67,7 @@ pub fn format_as_time(total_time: u64) -> ~str {
         time_string += fmt!("%?.", seconds);
         // nanoseconds don't need to be quite as accurate if we measure seconds
         let ns_as_string = fmt!("%.5?", (nanoseconds as f64) / (SEC_MULTIPLIER as f64));
-        time_string += fmt!("%s", str::slice(ns_as_string, 2, 5));
+        time_string += fmt!("%s", ns_as_string.slice(2, 5));
     } else {
         time_string += fmt!("%s", format_number(nanoseconds));
     }
@@ -92,10 +91,10 @@ fn format_number(num: u64) -> ~str {
     let repr = num.to_str();
     let mut ret_val = ~"";
     let mut index = 0;
-    let length = str::len(repr);
+    let length = repr.len();
 
     while index < length {
-        ret_val += str::slice(repr, index, index + 1);
+        ret_val += repr.slice(index, index + 1);
 
         if (length - index - 1) % 3 == 0 && length > index + 1{
             ret_val += ",";

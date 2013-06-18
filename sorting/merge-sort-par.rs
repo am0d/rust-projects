@@ -19,8 +19,8 @@ fn parallel_merge_sort<T:Ord+Copy+Owned>(arr: ~[T], depth: uint) -> ~[T] {
     }
 
     let middle = length / 2;
-    let mut left = vec::to_owned(vec::slice(arr, 0, middle));
-    let mut right = vec::to_owned(vec::slice(arr, middle, length));
+    let mut left = vec::slice(arr, 0, middle).to_owned();
+    let mut right = vec::slice(arr, middle, length).to_owned();
 
     if depth < 8 {
         /* Create channel to pass the results back */
