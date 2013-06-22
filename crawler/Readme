@@ -1,3 +1,8 @@
+** Update
+This code has not been worked on for quite a while, and has now bitrotted so much
+that I'm not sure I can get it working any time soon.  It will most likely be removed
+soon unless I decide to update it again (not likely).
+
 A simple web crawler written in Rust.
 
 Note that the code in this directory is *NOT* supposed to be good Rust code -

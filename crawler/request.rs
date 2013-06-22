@@ -1,17 +1,17 @@
-#[allow(non_implicitly_copyable_typarams)];
+extern mod extra;
 
-use core::io::{Writer,WriterUtil,Reader,ReaderUtil};
-use url=std::net_url;
-use std::net::url::*;
-use ip=std::net_ip;
-use std::net_ip::{Ipv4,Ipv6,IpAddr};
-use std::uv_global_loop;
-use socket=std::net_tcp;
+use std::io::{Writer,WriterUtil,Reader,ReaderUtil};
+use url=extra::net_url;
+use extra::net::url::*;
+use ip=extra::net_ip;
+use extra::net_ip::{Ipv4,Ipv6,IpAddr};
+use extra::uv_global_loop;
+use socket=extra::net_tcp;
 
 struct Request {
-    mut url: Url,
-    mut headers: headers::HttpHeaderCollection,
-    mut response_text: Option<~str>
+    url: Url,
+    headers: headers::HttpHeaderCollection,
+    response_text: Option<~str>
 }
 
 pub fn Request(requestUrl: ~str) -> Request {

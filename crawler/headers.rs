@@ -1,12 +1,10 @@
-#[allow(non_implicitly_copyable_typarams)];
-
 extern mod std;
 use std::send_map::linear;
 use send_map::linear::LinearMap;
 
 pub struct HttpHeaderCollection {
-    mut header_collection: LinearMap<~str, ~[~str]>,
-    mut status_code: int
+    header_collection: LinearMap<~str, ~[~str]>,
+    status_code: int
 }
 
 pub fn HttpHeaderCollection() -> HttpHeaderCollection {
