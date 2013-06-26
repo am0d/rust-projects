@@ -12,7 +12,7 @@ fn insertion_sort<T:Ord+Copy>(arr: ~[T]) -> ~[T] {
     let mut result = copy arr;
 
     while index < length {
-        let valueToInsert = result[index];
+        let valueToInsert = copy result[index];
         let mut holePos = index;
 
         while holePos > 0 && valueToInsert < result[holePos - 1] {
