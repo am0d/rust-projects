@@ -110,7 +110,7 @@ impl Benchmark {
                 if !ensure_sorted(sorted) {
                     /* Print the values so we can see what they actually look like.
                        Note: Should probably only do this if the array is small */
-                    for sorted.each |v| {
+                    for sorted.iter().advance |v| {
                         io::println(fmt!("%?", *v as uint));
                     }
                     fail!(fmt!("Trial %?: Array was not sorted correctly", trial_number));
@@ -133,7 +133,7 @@ impl Benchmark {
         }
 
         /* Print out the average time at the end */
-        let total_time = do iter::sum |f| { sort_times.each(f) };
+        let total_time = do iter::sum |f| { sort_times.iter().advance(f) };
         let average_time = total_time / (self.num_trials as u64);
         io::println(fmt!("Average time: %s", timer::format_as_time(average_time)));
     }
@@ -153,7 +153,7 @@ pub fn generate_random_array(size: uint) -> ~[uint] {
 
 fn ensure_sorted(arr: &[uint]) -> bool {
     let mut previous_value = 0;
-    for arr.each |v| {
+    for arr.iter().advance |v| {
         if *v < previous_value {
             return false
         }
