@@ -3,20 +3,20 @@
  */
 extern mod extra;
 extern mod benchmark;
-use std::vec;
+
 use benchmark::Benchmark;
 
-fn insertion_sort<T:Ord+Copy>(arr: ~[T]) -> ~[T] {
+fn insertion_sort<T:Ord+Clone>(arr: ~[T]) -> ~[T] {
     let mut index = 0;
     let length = arr.len();
-    let mut result = copy arr;
+    let mut result = arr.clone();
 
     while index < length {
-        let valueToInsert = copy result[index];
+        let valueToInsert = result[index].clone();
         let mut holePos = index;
 
         while holePos > 0 && valueToInsert < result[holePos - 1] {
-            vec::swap(result, holePos, holePos - 1);
+            result.swap(holePos, holePos - 1);
             holePos -= 1;
         }
         index += 1;

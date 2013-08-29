@@ -3,13 +3,13 @@
 */
 extern mod extra;
 extern mod benchmark;
-use std::vec;
+
 use benchmark::Benchmark;
 
-fn selection_sort<T:Ord+Copy>(arr: ~[T]) -> ~[T] {
+fn selection_sort<T:Ord+Clone>(arr: ~[T]) -> ~[T] {
     let mut left: uint = 0;
     let mut right: uint;
-    let mut result = copy arr;
+    let mut result =  arr.clone();
     let max = result.len() - 1;
     let mut indexOfMinValue: uint;
 
@@ -25,7 +25,7 @@ fn selection_sort<T:Ord+Copy>(arr: ~[T]) -> ~[T] {
 
         if indexOfMinValue != left {
             // swap the two values
-            vec::swap(result, left, indexOfMinValue);
+            result.swap(left, indexOfMinValue);
         }
 
         left += 1;

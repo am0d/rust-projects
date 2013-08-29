@@ -6,7 +6,8 @@ extern mod timer;
 use std::{io, result, os};
 use std::uint;
 use std::rand;
-use std::{vec, iter};
+use std::vec;
+use std::iterator::AdditiveIterator;
 use extra::getopts::*;
 use timer::Timer;
 
@@ -39,7 +40,7 @@ impl Benchmark {
                 optopt("numtrials"),
                 optflag("verify")
                 ];
-            let matches = match getopts(vec::tail(args), opts) {
+            let matches = match getopts(args.tail(), opts) {
                 result::Ok(m) => { m }
                 result::Err(f) => { fail!(fail_str(f)) }
             };
@@ -80,10 +81,9 @@ impl Benchmark {
     pub fn run(&mut self, sort: ~fn(~[uint])->~[uint]) {
         self.parse_opts();
         let mut timer = Timer::new();
-        let mut trial_number = 0;
-        let mut sort_times = vec::from_elem(self.num_trials, 0);
+        let mut sort_times = vec::from_elem(self.num_trials, 0u64);
 
-        for self.num_trials.times {
+        for trial_number in range(0, self.num_trials) {
             let vals = generate_random_array(self.trial_size);
             /* Run the sort and record the timing */
             match self.quiet {
@@ -110,7 +110,7 @@ impl Benchmark {
                 if !ensure_sorted(sorted) {
                     /* Print the values so we can see what they actually look like.
                        Note: Should probably only do this if the array is small */
-                    for sorted.iter().advance |v| {
+                    for v in sorted.iter() {
                         io::println(fmt!("%?", *v as uint));
                     }
                     fail!(fmt!("Trial %?: Array was not sorted correctly", trial_number));
@@ -128,12 +128,10 @@ impl Benchmark {
             }
             /* Record the time it took */
             sort_times[trial_number] = timer.get_total_time();
-
-            trial_number += 1;
         }
 
         /* Print out the average time at the end */
-        let total_time = do iter::sum |f| { sort_times.iter().advance(f) };
+        let total_time = sort_times.iter().map(|&x| x).sum(); //do iter::sum |f| { sort_times.iter().advance(f) };
         let average_time = total_time / (self.num_trials as u64);
         io::println(fmt!("Average time: %s", timer::format_as_time(average_time)));
     }
@@ -142,7 +140,7 @@ impl Benchmark {
 pub fn generate_random_array(size: uint) -> ~[uint] {
     let ret = vec::build_sized(size, 
                     |push| {
-                        for size.times {
+                        do size.times {
                             push(rand::random());
                         }
                     }
@@ -153,7 +151,7 @@ pub fn generate_random_array(size: uint) -> ~[uint] {
 
 fn ensure_sorted(arr: &[uint]) -> bool {
     let mut previous_value = 0;
-    for arr.iter().advance |v| {
+    for v in arr.iter() {
         if *v < previous_value {
             return false
         }

@@ -3,13 +3,13 @@
 */
 extern mod extra;
 extern mod benchmark;
-use std::vec;
+
 use benchmark::Benchmark;
 
-fn swap_sort<T:Ord+Copy>(arr: ~[T]) -> ~[T] {
+fn swap_sort<T:Ord+Clone>(arr: ~[T]) -> ~[T] {
     let mut left = 0;
     let mut right: uint;
-    let mut result = copy arr;
+    let mut result = arr.clone();
     let max = result.len();
 
     while left < max {
@@ -17,7 +17,8 @@ fn swap_sort<T:Ord+Copy>(arr: ~[T]) -> ~[T] {
         while right < max {
             if result[right] < result[left] {
                 // swap the two values
-                vec::swap(result, left, right);
+                //vec::swap(result, left, right);
+                result.swap(left, right);
             }
             right += 1;
         }

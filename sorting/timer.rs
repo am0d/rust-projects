@@ -51,35 +51,35 @@ pub fn format_as_time(total_time: u64) -> ~str {
 
     let mut time_string = ~"";
     if hours > 0 {
-        time_string += fmt!("%?:", hours);
+        time_string.push_str(fmt!("%?:", hours as int));
     }
     if hours > 0 || minutes > 0 {
         if minutes < 10 && hours > 0 {
-            time_string += "0";
+            time_string.push_str("0");
         }
-        time_string += fmt!("%?:", minutes);
+        time_string.push_str(fmt!("%?:", minutes as int));
     }
     if hours > 0 || minutes > 0 || seconds > 0 {
         if seconds < 10 && (minutes > 0 || hours > 0) {
             // HACK: fmt!("%02?.", seconds) doesn't zero pad
-            time_string += "0";
+            time_string.push_str("0");
         }
-        time_string += fmt!("%?.", seconds);
+        time_string.push_str(fmt!("%?.", seconds as int));
         // nanoseconds don't need to be quite as accurate if we measure seconds
         let ns_as_string = fmt!("%.5?", (nanoseconds as f64) / (SEC_MULTIPLIER as f64));
-        time_string += fmt!("%s", ns_as_string.slice(2, 5));
+        time_string.push_str(fmt!("%s", ns_as_string.slice(2, 5)));
     } else {
-        time_string += fmt!("%s", format_number(nanoseconds));
+        time_string.push_str(fmt!("%s", format_number(nanoseconds)));
     }
 
     if hours > 0 {
-        time_string += " hr";
+        time_string.push_str(" hr");
     } else if minutes > 0 {
-        time_string += " min";
+        time_string.push_str(" min");
     } else if seconds > 0 {
-        time_string += " sec";
+        time_string.push_str(" sec");
     } else {
-        time_string += " ns";
+        time_string.push_str(" ns");
     }
 
     //time_string += fmt!(" (%?)", total_time);
@@ -94,10 +94,10 @@ fn format_number(num: u64) -> ~str {
     let length = repr.len();
 
     while index < length {
-        ret_val += repr.slice(index, index + 1);
+        ret_val.push_str(repr.slice(index, index + 1));
 
         if (length - index - 1) % 3 == 0 && length > index + 1{
-            ret_val += ",";
+            ret_val.push_str(",");
         }
         index += 1;
     }

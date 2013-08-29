@@ -6,15 +6,15 @@ extern mod benchmark;
 use std::vec;
 use benchmark::Benchmark;
 
-fn merge_sort<T:Ord+Copy>(arr: ~[T]) -> ~[T] {
+fn merge_sort<T:Ord+Clone>(arr: ~[T]) -> ~[T] {
     let length = arr.len();
     if length <= 1 {
         return arr.to_owned();
     }
 
     let middle = length / 2;
-    let mut left = vec::slice(arr, 0, middle).to_owned();
-    let mut right = vec::slice(arr, middle, length).to_owned();
+    let mut left = arr.slice(0, middle).to_owned();
+    let mut right = arr.slice(middle, length).to_owned();
 
     left = merge_sort(left);
     right = merge_sort(right);
@@ -22,10 +22,10 @@ fn merge_sort<T:Ord+Copy>(arr: ~[T]) -> ~[T] {
     merge(left, right)
 }
 
-fn merge<T:Ord+Copy>(left_orig: ~[T], right_orig: ~[T]) -> ~[T] {
-    let mut left = copy left_orig;
-    let mut right = copy right_orig;
-    let mut result = vec::from_elem(0, copy left[0]);
+fn merge<T:Ord+Clone>(left_orig: ~[T], right_orig: ~[T]) -> ~[T] {
+    let mut left = left_orig.clone();
+    let mut right = right_orig.clone();
+    let mut result = vec::from_elem(0, left[0].clone());
 
     while left.len() > 0 || right.len() > 0 {
         if left.len() > 0 && right.len() > 0 {

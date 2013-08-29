@@ -3,11 +3,11 @@
 */
 extern mod extra;
 extern mod benchmark;
-use std::vec;
+
 use benchmark::Benchmark;
 
-fn bubble_sort<T:Ord+Copy>(arr: ~[T]) -> ~[T] {
-    let mut result = copy arr;
+fn bubble_sort<T:Ord+Clone>(arr: ~[T]) -> ~[T] {
+    let mut result = arr.clone();
     let mut left: uint;
     let mut right: uint = arr.len() - 1;
     let mut swap_occurred = true;
@@ -18,7 +18,7 @@ fn bubble_sort<T:Ord+Copy>(arr: ~[T]) -> ~[T] {
         while left < right {
             if result[left+1] < result[left] {
                 // swap the two values
-                vec::swap(result, left, left+1);
+                result.swap(left, left+1);
                 swap_occurred = true;
             }
             left += 1;

@@ -10,21 +10,22 @@ use benchmark::Benchmark;
 
 static _SC_NPROCESSORS_ONLN: i32 = 84;
 
-fn parallel_merge_sort_helper<T:Ord+Copy+Owned>(arr: ~[T]) -> ~[T] {
+#[fixed_stack_segment]
+fn parallel_merge_sort_helper<T:Ord+Clone+Send>(arr: ~[T]) -> ~[T] {
     let MAX_THREADS = unsafe {std::libc::funcs::posix88::unistd::sysconf(_SC_NPROCESSORS_ONLN) as uint};
 
     parallel_merge_sort(arr, 0, MAX_THREADS)
 }
 
-fn parallel_merge_sort<T:Ord+Copy+Owned>(arr: ~[T], depth: uint, max_threads: uint) -> ~[T] {
+fn parallel_merge_sort<T:Ord+Clone+Send>(arr: ~[T], depth: uint, max_threads: uint) -> ~[T] {
     let length = arr.len();
     if length <= 1 {
         return arr.to_owned();
     }
 
     let middle = length / 2;
-    let mut left = vec::slice(arr, 0, middle).to_owned();
-    let mut right = vec::slice(arr, middle, length).to_owned();
+    let mut left = arr.slice(0, middle).to_owned();
+    let mut right = arr.slice(middle, length).to_owned();
 
     if depth < max_threads {
         /* Create channel to pass the results back */
@@ -46,10 +47,10 @@ fn parallel_merge_sort<T:Ord+Copy+Owned>(arr: ~[T], depth: uint, max_threads: ui
     merge(left, right)
 }
 
-fn merge<T:Ord+Copy>(left_orig: ~[T], right_orig: ~[T]) -> ~[T] {
-    let mut left = copy left_orig;
-    let mut right = copy right_orig;
-    let mut result = vec::from_elem(0, copy left[0]);
+fn merge<T:Ord+Clone>(left_orig: ~[T], right_orig: ~[T]) -> ~[T] {
+    let mut left = left_orig.clone();
+    let mut right = right_orig.clone();
+    let mut result = vec::from_elem(0, left[0].clone());
 
     while left.len() > 0 || right.len() > 0 {
         if left.len() > 0 && right.len() > 0 {
