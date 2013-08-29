@@ -1,4 +1,5 @@
-extern mod std;
+use std::io;
+use std::os;
 
 fn main() {
     let args = os::args();

@@ -1,6 +1,8 @@
-extern mod std;
-use core::task::spawn;
-use core::comm::{stream,Chan,Port};
+extern mod extra;
+use std::task::spawn;
+use std::comm::{stream,Chan,Port};
+use std::io;
+use std::cell::Cell;
 
 fn generate(ch: &Chan<int>) {
     let mut i = 2;
@@ -34,8 +36,10 @@ fn main() {
         io::println(fmt!("%d", prime));
 
         let (new_port, new_chan) = stream();
-        do spawn |prev_port| {
-            filter(&prev_port, &new_chan, prime);
+        let prev_port_cell = Cell::new(prev_port);
+
+        do spawn {
+            filter(&prev_port_cell.take(), &new_chan, prime);
         }
         prev_port = new_port;
         //i += 1;

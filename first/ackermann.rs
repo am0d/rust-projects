@@ -1,4 +1,6 @@
-extern mod std;
+use std::io;
+use std::os;
+use std::int;
 
 fn ackermann(m: int, n: int) -> int {
     if m == 0 {

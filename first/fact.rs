@@ -1,7 +1,10 @@
-extern mod std;
+use std::os;
+use std::io;
+use std::int;
 
 fn fact(n: int) -> int {
-    let mut result = 1, i = 1;
+    let mut result = 1;
+    let mut i = 1;
     while i <= n {
         result *= i;
         i += 1;
