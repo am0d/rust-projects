@@ -1,5 +1,4 @@
 use std::os;
-use std::io;
 
 fn fact(n: int) -> int {
     let mut result = 1;
@@ -18,15 +17,15 @@ fn main() {
         let val = match from_str::<int>(args[1]) {
             Some(n) => { n}
             _ => {
-                io::println("n must be an integer");
+                println("n must be an integer");
                 0
             }
         };
             
         let val= fact(val);
-        io::println(fmt!("%d", val));
+        println!("{}", val);
     }
     else {
-        io::println(fmt!("Usage: %s n", args[0]));
+        println!("Usage: {} n", args[0]);
     }
 }

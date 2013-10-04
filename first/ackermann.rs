@@ -1,4 +1,3 @@
-use std::io;
 use std::os;
 
 fn ackermann(m: int, n: int) -> int {
@@ -18,26 +17,28 @@ fn ackermann(m: int, n: int) -> int {
 fn main() {
     let args = os::args();
     if args.len() < 3 {
-        io::println(fmt!("usage: %s m n", args[0]));
+        println!("usage: {} m n", args[0]);
         return;
     };
 
     let m = match from_str::<int>(args[1]) {
         Some(x) => {x}
-        _ => {io::println(fmt!("m must be an integer"));
-              return;
-             }
+        _ => {
+            println("m must be an integer");
+            return;
+        }
     };
 
     let n = match from_str::<int>(args[2]) {
         Some(x) => {x}
-        _ => {io::println(fmt!("n must be an integer"));
-              return;
-             }
+        _ => {
+            println("n must be an integer");
+            return;
+        }
     };
 
     let result = ackermann(m, n);
 
-    io::println(fmt!("ackermann(%d, %d)", m, n));
-    io::println(fmt!("Result: %d", result));
+    println!("ackermann({}, {})", m, n);
+    println!("Result: {}", result);
 }

@@ -1,7 +1,6 @@
 extern mod extra;
 use std::task::spawn;
 use std::comm::{stream,Chan,Port};
-use std::io;
 use std::cell::Cell;
 
 fn generate(ch: &Chan<int>) {
@@ -32,7 +31,7 @@ fn main() {
 
     loop {
         let prime = prev_port.recv();
-        io::println(fmt!("%d", prime));
+        println!("{}", prime);
 
         let (new_port, new_chan) = stream();
         let prev_port_cell = Cell::new(prev_port);
