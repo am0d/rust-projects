@@ -1,6 +1,5 @@
 use std::io;
 use std::os;
-use std::int;
 
 fn ackermann(m: int, n: int) -> int {
     if m == 0 {
@@ -23,14 +22,14 @@ fn main() {
         return;
     };
 
-    let m = match int::from_str(args[1]) {
+    let m = match from_str::<int>(args[1]) {
         Some(x) => {x}
         _ => {io::println(fmt!("m must be an integer"));
               return;
              }
     };
 
-    let n = match int::from_str(args[2]) {
+    let n = match from_str::<int>(args[2]) {
         Some(x) => {x}
         _ => {io::println(fmt!("n must be an integer"));
               return;

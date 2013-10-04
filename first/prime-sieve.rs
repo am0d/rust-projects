@@ -30,7 +30,6 @@ fn main() {
         generate(&chan);
     }
 
-    //let mut i = 0;
     loop {
         let prime = prev_port.recv();
         io::println(fmt!("%d", prime));
@@ -42,6 +41,5 @@ fn main() {
             filter(&prev_port_cell.take(), &new_chan, prime);
         }
         prev_port = new_port;
-        //i += 1;
     }
 }

@@ -1,6 +1,5 @@
 use std::os;
 use std::io;
-use std::int;
 
 fn fact(n: int) -> int {
     let mut result = 1;
@@ -16,7 +15,7 @@ fn fact(n: int) -> int {
 fn main() {
     let args = os::args();
     if args.len() >= 2 {
-        let val = match int::from_str(args[1]) {
+        let val = match from_str::<int>(args[1]) {
             Some(n) => { n}
             _ => {
                 io::println("n must be an integer");

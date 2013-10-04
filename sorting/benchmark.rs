@@ -4,14 +4,13 @@
 extern mod extra;
 extern mod timer;
 use std::{io, result, os};
-use std::uint;
 use std::rand;
 use std::vec;
-use std::iterator::AdditiveIterator;
+use std::iter::AdditiveIterator;
 use extra::getopts::*;
 use timer::Timer;
 
-struct Benchmark {
+pub struct Benchmark {
     num_trials: uint,
     trial_size: uint,
     quiet: u8,
@@ -42,21 +41,21 @@ impl Benchmark {
                 ];
             let matches = match getopts(args.tail(), opts) {
                 result::Ok(m) => { m }
-                result::Err(f) => { fail!(fail_str(f)) }
+                result::Err(f) => { fail!(f.to_str()) }
             };
-            if opt_present(&matches, "q") || opt_present(&matches, "quiet") {
-                self.quiet = opt_count(&matches, "q") as u8;
+            if matches.opt_present("q") || matches.opt_present("quiet") {
+                self.quiet = matches.opt_count("q") as u8;
                 if self.quiet < 1{
                     self.quiet = 1;
                 }
             }
-            if opt_present(&matches, "verify") {
+            if matches.opt_present("verify") {
                 self.verify = true;
             }
 
-            match opt_maybe_str(&matches, "trialsize") {
+            match matches.opt_str("trialsize") {
                 Some(size) => {
-                    match uint::from_str(size) {
+                    match from_str::<uint>(size) {
                         Some(ts) => { self.trial_size = ts }
                         None => { fail!("Trial size must be an integer") }
                     }
@@ -64,9 +63,9 @@ impl Benchmark {
                 None => {}
             }
 
-            match opt_maybe_str(&matches, "numtrials") {
+            match matches.opt_str("numtrials") {
                 Some(trials) => {
-                    match uint::from_str(trials) {
+                    match from_str::<uint>(trials) {
                         Some(t) => { self.num_trials = t }
                         None => { fail!("Number of trials must be an integer") }
                     }
@@ -138,7 +137,7 @@ impl Benchmark {
 }
 
 pub fn generate_random_array(size: uint) -> ~[uint] {
-    let ret = vec::build_sized(size, 
+    let ret = vec::build(Some(size), 
                     |push| {
                         do size.times {
                             push(rand::random());
