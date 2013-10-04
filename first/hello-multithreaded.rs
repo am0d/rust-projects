@@ -1,4 +1,3 @@
-use std::io;
 use std::task::spawn;
 use std::comm::{stream, SharedChan};
 
@@ -13,15 +12,8 @@ fn main () {
         }
     }
 
-    let mut count = 0;
-
-    loop {
-        if count >= 20 {
-            break;
-        }
-
+    for _ in range(0, 20) {
         let received = port.recv();
-        io::print(fmt!("Message received from child %d\n", received));
-        count = count + 1;
+        println!("Message received from child {}", received);
     }
 }
