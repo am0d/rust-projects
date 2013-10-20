@@ -31,7 +31,7 @@ impl Timer {
         return self.end_time - self.start_time;
     }
     pub fn show_time(&mut self) -> () {
-        std::io::println(fmt!("Total time: %s", self.get_time_string()));
+        println!("Total time: {:s}", self.get_time_string());
     }
 }
 
@@ -51,25 +51,25 @@ pub fn format_as_time(total_time: u64) -> ~str {
 
     let mut time_string = ~"";
     if hours > 0 {
-        time_string.push_str(fmt!("%?:", hours as int));
+        time_string.push_str(format!("{}:", hours as int));
     }
     if hours > 0 || minutes > 0 {
         if minutes < 10 && hours > 0 {
             time_string.push_str("0");
         }
-        time_string.push_str(fmt!("%?:", minutes as int));
+        time_string.push_str(format!("{}:", minutes as int));
     }
     if hours > 0 || minutes > 0 || seconds > 0 {
         if seconds < 10 && (minutes > 0 || hours > 0) {
-            // HACK: fmt!("%02?.", seconds) doesn't zero pad
+            // HACK: format!("%02?.", seconds) doesn't zero pad
             time_string.push_str("0");
         }
-        time_string.push_str(fmt!("%?.", seconds as int));
+        time_string.push_str(format!("{}.", seconds as int));
         // nanoseconds don't need to be quite as accurate if we measure seconds
-        let ns_as_string = fmt!("%.5?", (nanoseconds as f64) / (SEC_MULTIPLIER as f64));
-        time_string.push_str(fmt!("%s", ns_as_string.slice(2, 5)));
+        let ns_as_string = format!("{:.5?}", (nanoseconds as f64) / (SEC_MULTIPLIER as f64));
+        time_string.push_str(format!("{:s}", ns_as_string.slice(2, 5)));
     } else {
-        time_string.push_str(fmt!("%s", format_number(nanoseconds)));
+        time_string.push_str(format!("{:s}", format_number(nanoseconds)));
     }
 
     if hours > 0 {
@@ -82,7 +82,7 @@ pub fn format_as_time(total_time: u64) -> ~str {
         time_string.push_str(" ns");
     }
 
-    //time_string += fmt!(" (%?)", total_time);
+    //time_string += format!(" ({})", total_time);
 
     return time_string;
 }
