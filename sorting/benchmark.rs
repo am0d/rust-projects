@@ -7,7 +7,7 @@ use std::{io, result, os};
 use std::rand;
 use std::vec;
 use std::iter::AdditiveIterator;
-use extra::getopts::*;
+use extra::getopts::{getopts, optflag, optflagmulti, optopt};
 use timer::Timer;
 
 pub struct Benchmark {
@@ -87,7 +87,7 @@ impl Benchmark {
             /* Run the sort and record the timing */
             match self.quiet {
                 0 => { std::io::println("Starting sort ..."); }
-                1 => { std::io::println(fmt!("Trial %?", trial_number)); }
+                1 => { println!("Trial {}", trial_number); }
                 _ => {}
             }
 
@@ -110,9 +110,9 @@ impl Benchmark {
                     /* Print the values so we can see what they actually look like.
                        Note: Should probably only do this if the array is small */
                     for v in sorted.iter() {
-                        io::println(fmt!("%?", *v as uint));
+                        println!("{}", *v as uint);
                     }
-                    fail!(fmt!("Trial %?: Array was not sorted correctly", trial_number));
+                    fail!(format!("Trial {}: Array was not sorted correctly", trial_number));
                 }
                 match self.quiet {
                     0 => { std::io::println("Sort was correct."); }
@@ -132,7 +132,7 @@ impl Benchmark {
         /* Print out the average time at the end */
         let total_time = sort_times.iter().map(|&x| x).sum(); //do iter::sum |f| { sort_times.iter().advance(f) };
         let average_time = total_time / (self.num_trials as u64);
-        io::println(fmt!("Average time: %s", timer::format_as_time(average_time)));
+        println!("Average time: {}", timer::format_as_time(average_time));
     }
 }
 
