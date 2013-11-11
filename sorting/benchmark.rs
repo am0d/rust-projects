@@ -3,7 +3,8 @@
 
 extern mod extra;
 extern mod timer;
-use std::{io, result, os};
+use std::{result, os};
+use std::rt::io;
 use std::rand;
 use std::vec;
 use std::iter::AdditiveIterator;
@@ -86,7 +87,7 @@ impl Benchmark {
             let vals = generate_random_array(self.trial_size);
             /* Run the sort and record the timing */
             match self.quiet {
-                0 => { std::io::println("Starting sort ..."); }
+                0 => { println("Starting sort ..."); }
                 1 => { println!("Trial {}", trial_number); }
                 _ => {}
             }
@@ -103,7 +104,7 @@ impl Benchmark {
             if self.verify {
                 /* Check that it actually is sorted */
                 match self.quiet {
-                    0 => { std::io::println("Verifying sort ..."); }
+                    0 => { println("Verifying sort ..."); }
                     _ => {}
                 }
                 if !ensure_sorted(sorted) {
@@ -115,7 +116,7 @@ impl Benchmark {
                     fail!(format!("Trial {}: Array was not sorted correctly", trial_number));
                 }
                 match self.quiet {
-                    0 => { std::io::println("Sort was correct."); }
+                    0 => { println("Sort was correct."); }
                     _ => {}
                 }
             }
