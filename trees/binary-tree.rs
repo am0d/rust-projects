@@ -1,22 +1,24 @@
 use std::Option;
 use std::ptr;
 
+use treeiter::TreeIterator;
+
+pub mod treeiter;
+
 struct Tree<T> {
     root: Option<~Node<T>>
 }
 pub struct Node<T> {
     left_child: Option<~Node<T>>,
     right_child: Option<~Node<T>>,
-    parent: Option<*const Node<T>>,
     key: T
 }
 
-impl<T:Ord> Node<T> {
+impl<T:Ord+Eq> Node<T> {
     pub fn new (nodeKey: T) -> Node<T> {
         Node {
             left_child: None,
             right_child: None,
-            parent: None,
             key: nodeKey
         }
     }
@@ -30,10 +32,9 @@ impl<T:Ord> Node<T> {
         }
     }
 
-    fn add_right_child(&mut self, mut new_node: ~Node<T>) {
+    fn add_right_child(&mut self, new_node: ~Node<T>) {
         match self.right_child {
             None => {
-                new_node.parent = Some(ptr::to_const_unsafe_ptr(self));
                 self.right_child = Some(new_node);
             },
             Some(ref mut right_child) => {
@@ -42,10 +43,9 @@ impl<T:Ord> Node<T> {
         }
     }
 
-    fn add_left_child(&mut self, mut new_node: ~Node<T>) {
+    fn add_left_child(&mut self, new_node: ~Node<T>) {
         match self.left_child {
             None => {
-                new_node.parent = Some(ptr::to_const_unsafe_ptr(self));
                 self.left_child = Some(new_node);
             },
             Some(ref mut left_child) => {
@@ -66,7 +66,13 @@ impl<T:Ord> Node<T> {
         }
     }
 
-    pub fn visit_in_order(&self, visitor: &fn(&Node<T>)) {
+    pub fn visit_in_order<'n>(&self, visitor: |&T| -> ()) -> TreeIterator<'n, T> {
+        TreeIterator {
+            stack: ~[]
+        }
+    }
+
+    /*pub fn visit_in_order(&self, visitor: &fn(&T)) {
         match self.left_child {
             Some (ref n) => {
                 n.visit_in_order(visitor);
@@ -74,7 +80,7 @@ impl<T:Ord> Node<T> {
             _ => {}
         }
         
-        visitor(self);
+        visitor(&self.key);
 
         match self.right_child {
             Some (ref n) => {
@@ -82,22 +88,39 @@ impl<T:Ord> Node<T> {
             },
             _ => {}
         }
-    }
+    }*/
+
+    /*pub fn search(&self, needle: T) -> Option<T> {
+        if self.key == needle {
+            return Some(self.key);
+        }
+        else if self.key < needle {
+            match self.left_child {
+                Some(ref n) => {
+                    return n.search(needle);
+                },
+                _ => {
+                    return None;
+                }
+            }
+        }
+        return None;
+    }*/
 }
 
-pub impl<T:Ord> Tree<T> {
+impl<T:Ord+Eq> Tree<T> {
     pub fn new () -> Tree<T> {
         Tree {
             root: None
         }
     }
 
-    fn insert_value (&mut self, value: T) {
+    pub fn insert_value (&mut self, value: T) {
         let new_node = ~Node::new(value);
         self.insert_node(new_node);
     }
 
-    fn insert_node (&mut self, new_node: ~Node<T>) {
+    pub fn insert_node (&mut self, new_node: ~Node<T>) {
         match self.root {
             None => {
                 self.root = Some(new_node);
@@ -108,10 +131,10 @@ pub impl<T:Ord> Tree<T> {
         }
     }
 
-    fn visit_in_order (&self, visitor: &fn(&Node<T>)) {
+    pub fn visit_in_order (&self, visitor: |&T|->()) {
         match self.root {
             Some(ref n) => {
-                n.visit_in_order(visitor);
+                //n.visit_in_order(visitor);
             },
             _ => {
             }
@@ -128,6 +151,6 @@ fn main () {
     myTree.insert_value(0);
 
     myTree.visit_in_order(|n| {
-                          std::io::println(fmt!("%d", n.key));
+                          println!("{:d}", *n);
                           });
 }

@@ -1,9 +1,9 @@
 RUST_FLAGS = -L . -O
 
-LIBS := benchmark timer
+LIBS := 
 
 ALL_SOURCES := $(wildcard *.rs)
-BINARIES := $(ALL_SOURCES:.rs=)
+BINARIES := binary-tree
 
 ALL_BINARIES := $(BINARIES) $(ALL_SOURCES:%.rs=lib%)
 
@@ -12,10 +12,8 @@ BINARIES := $(filter-out $(LIBS), $(BINARIES))
 
 all: $(BINARIES)
 
-%: %.rs 
-	rustc $(RUST_FLAGS) $<
-
-libbenchmark: libtimer
+binary-tree: $(ALL_SOURCES)
+	rustc $(RUST_FLAGS) binary-tree.rs
 
 lib%: %.rs
 	rustc $(RUST_FLAGS) $<

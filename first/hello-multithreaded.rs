@@ -1,9 +1,8 @@
 use std::task::spawn;
-use std::comm::{stream, SharedChan};
+use std::comm::SharedChan;
 
 fn main () {
-    let (port, chan): (Port<int>, Chan<int>) = stream();
-    let chan: SharedChan<int> = SharedChan::new(chan);
+    let (port, chan): (Port<int>, SharedChan<int>) = SharedChan::new();
 
     for child_number in range(0, 20) {
         let child_chan: SharedChan<int> = chan.clone();

@@ -1,5 +1,5 @@
-use std::rt::io::stdin;
-use std::rt::io::buffered::BufferedReader;
+use std::io::stdin;
+use std::io::buffered::BufferedReader;
 
 fn main() {
     println("What is your name?");

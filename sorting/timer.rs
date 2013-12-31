@@ -1,6 +1,4 @@
-#[link(name = "timer",
-       vers = "0.1",
-       author = "Damien Schoof")];
+#[crate_id = "timer"];
 #[crate_type = "lib"];
 
 extern mod extra;

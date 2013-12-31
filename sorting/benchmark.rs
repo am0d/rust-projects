@@ -1,10 +1,10 @@
-#[link(name = "benchmark", vers = "0.1")];
+#[crate_id = "benchmark#0.1"];
 #[crate_type = "lib"];
 
 extern mod extra;
 extern mod timer;
 use std::{result, os};
-use std::rt::io;
+use std::io;
 use std::rand;
 use std::vec;
 use std::iter::AdditiveIterator;
@@ -78,7 +78,7 @@ impl Benchmark {
         }
     }
 
-    pub fn run(&mut self, sort: ~fn(~[uint])->~[uint]) {
+    pub fn run(&mut self, sort: fn(~[uint])->~[uint]) {
         self.parse_opts();
         let mut timer = Timer::new();
         let mut sort_times = vec::from_elem(self.num_trials, 0u64);
@@ -140,9 +140,9 @@ impl Benchmark {
 pub fn generate_random_array(size: uint) -> ~[uint] {
     let ret = vec::build(Some(size), 
                     |push| {
-                        do size.times {
+                        size.times(|| {
                             push(rand::random());
-                        }
+                        })
                     }
                     );
 
