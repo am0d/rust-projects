@@ -17,8 +17,7 @@ fn main() {
         let val = match from_str::<int>(args[1]) {
             Some(n) => { n}
             _ => {
-                println("n must be an integer");
-                0
+                fail!("n must be an integer");
             }
         };
             

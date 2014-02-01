@@ -6,9 +6,9 @@ fn main () {
 
     for child_number in range(0, 20) {
         let child_chan: SharedChan<int> = chan.clone();
-        do spawn {
+        spawn(proc() {
             child_chan.send(child_number);
-        }
+        });
     }
 
     for _ in range(0, 20) {

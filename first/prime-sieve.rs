@@ -25,9 +25,9 @@ fn main() {
 
     let mut prev_port = port;
 
-    do spawn {
+    spawn(proc() {
         generate(&chan);
-    }
+    });
 
     loop {
         let prime = prev_port.recv();
@@ -36,9 +36,9 @@ fn main() {
         let (new_port, new_chan) = Chan::new();
         let prev_port_cell = RefCell::new(prev_port);
 
-        do spawn {
+        spawn(proc() {
             filter(&prev_port_cell.unwrap(), &new_chan, prime);
-        }
+        });
         prev_port = new_port;
     }
 }

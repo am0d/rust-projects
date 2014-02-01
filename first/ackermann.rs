@@ -24,7 +24,7 @@ fn main() {
     let m = match from_str::<int>(args[1]) {
         Some(x) => {x}
         _ => {
-            println("m must be an integer");
+            println!("m must be an integer");
             return;
         }
     };
@@ -32,7 +32,7 @@ fn main() {
     let n = match from_str::<int>(args[2]) {
         Some(x) => {x}
         _ => {
-            println("n must be an integer");
+            println!("n must be an integer");
             return;
         }
     };

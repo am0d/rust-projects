@@ -30,17 +30,17 @@ fn merge<T:Ord+Clone>(left_orig: ~[T], right_orig: ~[T]) -> ~[T] {
     while left.len() > 0 || right.len() > 0 {
         if left.len() > 0 && right.len() > 0 {
             if left[0] < right[0] {
-                result.push(left.shift());
+                result.push(left.shift().unwrap());
             }
             else {
-                result.push(right.shift());
+                result.push(right.shift().unwrap());
             }
         }
         else if left.len() > 0 {
-            result.push(left.shift());
+            result.push(left.shift().unwrap());
         }
         else {
-            result.push(right.shift());
+            result.push(right.shift().unwrap());
         }
     }
     
