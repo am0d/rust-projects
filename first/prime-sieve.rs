@@ -1,4 +1,3 @@
-extern mod extra;
 use std::task::spawn;
 use std::comm::{Chan,Port};
 use std::cell::RefCell;

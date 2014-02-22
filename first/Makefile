@@ -1,4 +1,4 @@
-RUST_FLAGS = -L . -O -Z debug-info
+RUST_FLAGS = -L . -O -g
 
 LIBS := 
 
