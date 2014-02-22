@@ -1,8 +1,8 @@
 /* Sample swap sort program in Rust.
    Tested to compile with rust-0.6-f1ddb8d.
 */
-extern mod extra;
-extern mod benchmark;
+extern crate extra;
+extern crate benchmark;
 
 use benchmark::Benchmark;
 

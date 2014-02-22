@@ -1,7 +1,7 @@
 #[crate_id = "timer"];
 #[crate_type = "lib"];
 
-extern mod extra;
+extern crate extra;
 
 static SEC_MULTIPLIER:u64 = 1000 * 1000 * 1000;
 static MIN_MULTIPLIER:u64 = 60 * SEC_MULTIPLIER;

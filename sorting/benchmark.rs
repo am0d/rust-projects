@@ -1,13 +1,13 @@
 #[crate_id = "benchmark#0.1"];
 #[crate_type = "lib"];
 
-extern mod extra;
-extern mod timer;
+extern crate getopts;
+extern crate timer;
 use std::{result, os};
 use std::rand;
 use std::vec;
 use std::iter::AdditiveIterator;
-use extra::getopts::{getopts, optflag, optflagmulti, optopt};
+use getopts::{getopts, optflag, optflagmulti, optopt};
 use timer::Timer;
 
 pub struct Benchmark {
@@ -33,17 +33,16 @@ impl Benchmark {
         if self.parse_args {
             let args = os::args();
             let opts = ~[
-                optflagmulti("q"),
-                optflag("quiet"),
-                optopt("trialsize"),
-                optopt("numtrials"),
-                optflag("verify")
+                optflagmulti("q", "quiet", "Provide less output"),
+                optopt("", "trialsize", "", ""),
+                optopt("", "numtrials", "", ""),
+                optflag("", "verify", "Verify that the sort was correct")
                 ];
             let matches = match getopts(args.tail(), opts) {
                 result::Ok(m) => { m }
                 result::Err(f) => { fail!(f.to_str()) }
             };
-            if matches.opt_present("q") || matches.opt_present("quiet") {
+            if matches.opt_present("q") {
                 self.quiet = matches.opt_count("q") as u8;
                 if self.quiet < 1{
                     self.quiet = 1;

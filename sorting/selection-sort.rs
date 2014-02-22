@@ -1,8 +1,7 @@
 /* Sample selection sort program in Rust.
    Tested to compile with rust-0.6.
 */
-extern mod extra;
-extern mod benchmark;
+extern crate benchmark;
 
 use benchmark::Benchmark;
 
