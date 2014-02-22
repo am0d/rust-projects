@@ -6,3 +6,7 @@ install:
 script:
   - pushd first && make && popd
   - pushd sorting && make && popd
+
+notifications:
+    email:
+        - damien.schoof+github@gmail.com
