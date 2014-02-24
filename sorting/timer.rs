@@ -1,7 +1,7 @@
 #[crate_id = "timer"];
 #[crate_type = "lib"];
 
-extern crate extra;
+extern crate time;
 
 static SEC_MULTIPLIER:u64 = 1000 * 1000 * 1000;
 static MIN_MULTIPLIER:u64 = 60 * SEC_MULTIPLIER;
@@ -17,10 +17,10 @@ impl Timer {
         Timer { start_time: 0, end_time: 0}
     }
     pub fn start(&mut self) -> () {
-        self.start_time = extra::time::precise_time_ns();
+        self.start_time = time::precise_time_ns();
     }
     pub fn end(&mut self) -> () {
-        self.end_time = extra::time::precise_time_ns();
+        self.end_time = time::precise_time_ns();
     }
     pub fn get_time_string(&mut self) -> ~str {
         return format_as_time(self.get_total_time());
@@ -42,10 +42,10 @@ pub fn format_as_time(total_time: u64) -> ~str {
                    - hours * HR_MULTIPLIER 
                    - minutes * MIN_MULTIPLIER) 
         / SEC_MULTIPLIER;
-    let nanoseconds = (total_time 
+    let nanoseconds = total_time 
                        - hours * HR_MULTIPLIER 
                        - minutes * MIN_MULTIPLIER 
-                       - seconds * SEC_MULTIPLIER);
+                       - seconds * SEC_MULTIPLIER;
 
     let mut time_string = ~"";
     if hours > 0 {
