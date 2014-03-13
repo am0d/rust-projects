@@ -3,11 +3,11 @@
 
 extern crate getopts;
 extern crate timer;
+extern crate rand;
 use std::{result, os};
-use std::rand;
 use std::vec;
 use std::iter::AdditiveIterator;
-use getopts::{getopts, optflag, optflagmulti, optopt};
+use getopts::{getopts, optflag, optflagmulti, optopt, usage};
 use timer::Timer;
 
 pub struct Benchmark {
@@ -34,14 +34,22 @@ impl Benchmark {
             let args = os::args();
             let opts = ~[
                 optflagmulti("q", "quiet", "Provide less output"),
-                optopt("", "trialsize", "", ""),
-                optopt("", "numtrials", "", ""),
-                optflag("", "verify", "Verify that the sort was correct")
+                optopt("", "trialsize", "Number elements to sort in each trial", ""),
+                optopt("", "numtrials", "Number of trials to perform", ""),
+                optflag("", "verify", "Verify that the sort was correct"),
+                optflag("h", "help", "Show this help")
                 ];
             let matches = match getopts(args.tail(), opts) {
                 result::Ok(m) => { m }
                 result::Err(f) => { fail!(f.to_str()) }
             };
+            if matches.opt_present("h") || matches.opt_present("help") {
+                let brief = format!("Usage: {} [options]", args.head().unwrap_or(&~""));
+                print!("{}", usage(brief, opts));
+                self.num_trials = 0;
+                self.parse_args = false;
+                return;
+            }
             if matches.opt_present("q") {
                 self.quiet = matches.opt_count("q") as u8;
                 if self.quiet < 1{
@@ -128,10 +136,12 @@ impl Benchmark {
             sort_times[trial_number] = timer.get_total_time();
         }
 
-        /* Print out the average time at the end */
-        let total_time = sort_times.iter().map(|&x| x).sum(); //do iter::sum |f| { sort_times.iter().advance(f) };
-        let average_time = total_time / (self.num_trials as u64);
-        println!("Average time: {}", timer::format_as_time(average_time));
+        if self.num_trials > 0 {
+            /* Print out the average time at the end */
+            let total_time = sort_times.iter().map(|&x| x).sum(); //do iter::sum |f| { sort_times.iter().advance(f) };
+            let average_time = total_time / (self.num_trials as u64);
+            println!("Average time: {}", timer::format_as_time(average_time));
+        }
     }
 }
 

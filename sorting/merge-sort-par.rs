@@ -7,12 +7,10 @@ use std::comm::{Chan, Port};
 use std::cell::RefCell;
 use benchmark::Benchmark;
 
-static _SC_NPROCESSORS_ONLN: i32 = 84;
-
 fn parallel_merge_sort_helper<T:Ord+Clone+Send>(arr: ~[T]) -> ~[T] {
-    let MAX_THREADS = unsafe {std::libc::funcs::posix88::unistd::sysconf(_SC_NPROCESSORS_ONLN) as uint};
+    let max_threads = ::std::rt::default_sched_threads();
 
-    parallel_merge_sort(arr, 0, MAX_THREADS)
+    parallel_merge_sort(arr, 0, max_threads)
 }
 
 fn parallel_merge_sort<T:Ord+Clone+Send>(arr: ~[T], depth: uint, max_threads: uint) -> ~[T] {
