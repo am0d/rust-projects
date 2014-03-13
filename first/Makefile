@@ -1,4 +1,4 @@
-RUST_FLAGS = -L . -O -g1
+RUST_FLAGS = -L . -O -g
 
 LIBS := 
 
