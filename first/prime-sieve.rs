@@ -1,43 +1,43 @@
 use std::task::spawn;
-use std::comm::{Chan,Port};
+use std::comm::channel;
 use std::cell::RefCell;
 
-fn generate(ch: &Chan<int>) {
+fn generate(sender: &Sender<int>) {
     let mut i = 2;
     loop {
-        ch.send(i);
+        sender.send(i);
         i = i + 1;
     }
 }
 
-fn filter(in_ch: &Port<int>, out_ch: &Chan<int>, prime: int) {
+fn filter(receiver: &Receiver<int>, sender: &Sender<int>, prime: int) {
     loop {
-        let i = in_ch.recv();
+        let i = receiver.recv();
         if i % prime != 0 {
-            out_ch.send(i);
+            sender.send(i);
         }
     }
 }
 
 fn main() {
-    let (port, chan) = Chan::new();
+    let (sender, receiver) = channel();
 
-    let mut prev_port = port;
+    let mut prev_receiver = receiver;
 
     spawn(proc() {
-        generate(&chan);
+        generate(&sender);
     });
 
     loop {
-        let prime = prev_port.recv();
+        let prime = prev_receiver.recv();
         println!("{}", prime);
 
-        let (new_port, new_chan) = Chan::new();
-        let prev_port_cell = RefCell::new(prev_port);
+        let (new_sender, new_receiver) = channel();
+        let prev_receiver_cell = RefCell::new(prev_receiver);
 
         spawn(proc() {
-            filter(&prev_port_cell.unwrap(), &new_chan, prime);
+            filter(&prev_receiver_cell.unwrap(), &new_sender, prime);
         });
-        prev_port = new_port;
+        prev_receiver = new_receiver;
     }
 }

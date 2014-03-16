@@ -1,18 +1,18 @@
 use std::task::spawn;
-use std::comm::Chan;
+use std::comm::channel;
 
 fn main () {
-    let (port, chan): (Port<int>, Chan<int>) = Chan::new();
+    let (sender, receiver) = channel::<int>();
 
     for child_number in range(0, 20) {
-        let child_chan: Chan<int> = chan.clone();
+        let child_sender = sender.clone();
         spawn(proc() {
-            child_chan.send(child_number);
+            child_sender.send(child_number);
         });
     }
 
     for _ in range(0, 20) {
-        let received = port.recv();
+        let received = receiver.recv();
         println!("Message received from child {}", received);
     }
 }
