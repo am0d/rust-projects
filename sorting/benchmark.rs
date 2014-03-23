@@ -5,7 +5,7 @@ extern crate getopts;
 extern crate timer;
 extern crate rand;
 use std::{result, os};
-use std::vec;
+use std::slice;
 use std::iter::AdditiveIterator;
 use getopts::{getopts, optflag, optflagmulti, optopt, usage};
 use timer::Timer;
@@ -87,7 +87,7 @@ impl Benchmark {
     pub fn run(&mut self, sort: fn(~[uint])->~[uint]) {
         self.parse_opts();
         let mut timer = Timer::new();
-        let mut sort_times = vec::from_elem(self.num_trials, 0u64);
+        let mut sort_times = slice::from_elem(self.num_trials, 0u64);
 
         for trial_number in range(0, self.num_trials) {
             let vals = generate_random_array(self.trial_size);
@@ -146,7 +146,7 @@ impl Benchmark {
 }
 
 pub fn generate_random_array(size: uint) -> ~[uint] {
-    let ret = vec::build(Some(size), 
+    let ret = slice::build(Some(size), 
                     |push| {
                         for _ in range(0, size) {
                             push(rand::random());

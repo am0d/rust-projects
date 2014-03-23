@@ -2,7 +2,7 @@
    Tested to compile with rust-0.6-f1ddb8d.
 */
 extern crate benchmark;
-use std::vec;
+use std::slice;
 use benchmark::Benchmark;
 
 fn merge_sort<T:Ord+Clone>(arr: ~[T]) -> ~[T] {
@@ -24,7 +24,7 @@ fn merge_sort<T:Ord+Clone>(arr: ~[T]) -> ~[T] {
 fn merge<T:Ord+Clone>(left_orig: ~[T], right_orig: ~[T]) -> ~[T] {
     let mut left = left_orig.clone();
     let mut right = right_orig.clone();
-    let mut result = vec::from_elem(0, left[0].clone());
+    let mut result = slice::from_elem(0, left[0].clone());
 
     while left.len() > 0 || right.len() > 0 {
         if left.len() > 0 && right.len() > 0 {
