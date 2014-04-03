@@ -1,9 +1,4 @@
-use std::Option;
-use std::ptr;
-
-use treeiter::TreeIterator;
-
-pub mod treeiter;
+#![feature(macro_rules)]
 
 struct Tree<T> {
     root: Option<~Node<T>>
@@ -13,6 +8,44 @@ pub struct Node<T> {
     right_child: Option<~Node<T>>,
     key: T
 }
+
+macro_rules! tree_iterator(
+    ($name:ident -> $body:block) => (
+        pub struct $name<'t, T> {
+            stack: Vec<&'t ~Node<T>>
+        }
+
+        impl<'t, T:Ord+Eq> Iterator<&'t ~Node<T>> for $name<'t, T> {
+            fn next(&mut self) -> Option<&'t ~Node<T>> $body
+        }
+        )
+    )
+
+tree_iterator!(PreOrderTreeIterator -> {
+    match self.stack.pop() {
+        Some(ref n) => {
+            match n.left_child {
+                Some(ref n) => {
+                    self.stack.push(n);
+                },
+                _ => ()
+            };
+            match n.right_child {
+                Some(ref n) => {
+                    self.stack.push(n);
+                },
+                _ => ()
+            };
+            Some(*n)
+        },
+        None => None
+    }
+})
+
+
+tree_iterator!(InOrderTreeIterator -> {
+    None // TODO implement this one yet
+})
 
 impl<T:Ord+Eq> Node<T> {
     pub fn new (nodeKey: T) -> Node<T> {
@@ -63,12 +96,6 @@ impl<T:Ord+Eq> Node<T> {
                     _ => false
                 }
             }
-        }
-    }
-
-    pub fn visit_in_order<'n>(&self, visitor: |&T| -> ()) -> TreeIterator<'n, T> {
-        TreeIterator {
-            stack: ~[]
         }
     }
 
@@ -131,26 +158,30 @@ impl<T:Ord+Eq> Tree<T> {
         }
     }
 
-    pub fn visit_in_order (&self, visitor: |&T|->()) {
+    pub fn visit_pre_order<'n>(&'n self) -> PreOrderTreeIterator<'n, T> {
         match self.root {
             Some(ref n) => {
-                //n.visit_in_order(visitor);
+                PreOrderTreeIterator {
+                    stack: vec!(&*n)
+                }
             },
             _ => {
+                PreOrderTreeIterator {
+                    stack: vec!()
+                }
             }
         }
     }
 }
 
 fn main () {
-    let mut myTree: Tree<int> = Tree::new();
+    let mut my_tree: Tree<int> = Tree::new();
 
-    myTree.insert_value(3);
-    myTree.insert_value(2);
-    myTree.insert_value(4);
-    myTree.insert_value(0);
+    for key in vec!(3, 2, 4, 0, 8, 11, 18, 22, 16, 12, 7, 10).iter() {
+        my_tree.insert_value(*key);
+    }
 
-    myTree.visit_in_order(|n| {
-                          println!("{:d}", *n);
-                          });
+    for node in my_tree.visit_pre_order() {
+        println!("{}", node.key);
+    }
 }
