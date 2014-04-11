@@ -1,5 +1,5 @@
-#[crate_id = "timer"];
-#[crate_type = "lib"];
+#![crate_id = "timer"]
+#![crate_type = "lib"]
 
 extern crate time;
 

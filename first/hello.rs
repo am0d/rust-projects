@@ -1,4 +1,4 @@
-#[crate_id="hello#0.1"];
+#![crate_id="hello#0.1"]
 
 use std::os;
 

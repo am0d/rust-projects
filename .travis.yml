@@ -4,8 +4,7 @@ before_install:
 install:
   - sudo apt-get install rust-nightly
 script:
-  - pushd first && make && popd
-  - pushd sorting && make && popd
+    - make -k
 
 notifications:
     email:

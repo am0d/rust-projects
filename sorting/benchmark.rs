@@ -1,5 +1,5 @@
-#[crate_id = "benchmark#0.1"];
-#[crate_type = "lib"];
+#![crate_id = "benchmark#0.1"]
+#![crate_type = "lib"]
 
 extern crate getopts;
 extern crate timer;
