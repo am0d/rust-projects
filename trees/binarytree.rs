@@ -1,22 +1,22 @@
 #![feature(macro_rules)]
 
 struct Tree<T> {
-    root: Option<~Node<T>>
+    root: Option<Box<Node<T>>>
 }
 pub struct Node<T> {
-    left_child: Option<~Node<T>>,
-    right_child: Option<~Node<T>>,
+    left_child: Option<Box<Node<T>>>,
+    right_child: Option<Box<Node<T>>>,
     key: T
 }
 
 macro_rules! tree_iterator(
     ($name:ident -> $body:block) => (
         pub struct $name<'t, T> {
-            stack: Vec<&'t ~Node<T>>
+            stack: Vec<&'t Box<Node<T>>>
         }
 
-        impl<'t, T:Ord+Eq> Iterator<&'t ~Node<T>> for $name<'t, T> {
-            fn next(&mut self) -> Option<&'t ~Node<T>> $body
+        impl<'t, T:Ord+Eq> Iterator<&'t Box<Node<T>>> for $name<'t, T> {
+            fn next(&mut self) -> Option<&'t Box<Node<T>>> $body
         }
         )
     )
@@ -56,7 +56,7 @@ impl<T:Ord+Eq> Node<T> {
         }
     }
 
-    pub fn add_child_node(&mut self, new_node: ~Node<T>) {
+    pub fn add_child_node(&mut self, new_node: Box<Node<T>>) {
         if new_node.key > self.key {
             self.add_right_child(new_node);
         }
@@ -65,7 +65,7 @@ impl<T:Ord+Eq> Node<T> {
         }
     }
 
-    fn add_right_child(&mut self, new_node: ~Node<T>) {
+    fn add_right_child(&mut self, new_node: Box<Node<T>>) {
         match self.right_child {
             None => {
                 self.right_child = Some(new_node);
@@ -76,7 +76,7 @@ impl<T:Ord+Eq> Node<T> {
         }
     }
 
-    fn add_left_child(&mut self, new_node: ~Node<T>) {
+    fn add_left_child(&mut self, new_node: Box<Node<T>>) {
         match self.left_child {
             None => {
                 self.left_child = Some(new_node);
@@ -143,11 +143,11 @@ impl<T:Ord+Eq> Tree<T> {
     }
 
     pub fn insert_value (&mut self, value: T) {
-        let new_node = ~Node::new(value);
+        let new_node = box Node::new(value);
         self.insert_node(new_node);
     }
 
-    pub fn insert_node (&mut self, new_node: ~Node<T>) {
+    pub fn insert_node (&mut self, new_node: Box<Node<T>>) {
         match self.root {
             None => {
                 self.root = Some(new_node);
