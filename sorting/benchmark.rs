@@ -3,9 +3,8 @@
 
 extern crate getopts;
 extern crate timer;
-extern crate rand;
 use std::{result, os};
-use std::slice;
+use std::rand::random;
 use std::iter::AdditiveIterator;
 use getopts::{getopts, optflag, optflagmulti, optopt, usage};
 use timer::Timer;
@@ -44,8 +43,8 @@ impl Benchmark {
                 result::Err(f) => { fail!(f.to_str()) }
             };
             if matches.opt_present("h") || matches.opt_present("help") {
-                let brief = format!("Usage: {} [options]", args.head().unwrap_or(&~""));
-                print!("{}", usage(brief, opts));
+                let brief = format!("Usage: {} [options]", args.as_slice().head().map(|x| x.as_slice()).unwrap_or(""));
+                print!("{}", usage(brief.as_slice(), opts));
                 self.num_trials = 0;
                 self.parse_args = false;
                 return;
@@ -62,7 +61,7 @@ impl Benchmark {
 
             match matches.opt_str("trialsize") {
                 Some(size) => {
-                    match from_str::<uint>(size) {
+                    match from_str::<uint>(size.as_slice()) {
                         Some(ts) => { self.trial_size = ts }
                         None => { fail!("Trial size must be an integer") }
                     }
@@ -72,7 +71,7 @@ impl Benchmark {
 
             match matches.opt_str("numtrials") {
                 Some(trials) => {
-                    match from_str::<uint>(trials) {
+                    match from_str::<uint>(trials.as_slice()) {
                         Some(t) => { self.num_trials = t }
                         None => { fail!("Number of trials must be an integer") }
                     }
@@ -84,10 +83,10 @@ impl Benchmark {
         }
     }
 
-    pub fn run(&mut self, sort: fn(~[uint])->~[uint]) {
+    pub fn run(&mut self, sort: fn(Vec<uint>) -> Vec<uint>) {
         self.parse_opts();
         let mut timer = Timer::new();
-        let mut sort_times = slice::from_elem(self.num_trials, 0u64);
+        let mut sort_times = Vec::with_capacity(self.num_trials);
 
         for trial_number in range(0, self.num_trials) {
             let vals = generate_random_array(self.trial_size);
@@ -113,7 +112,7 @@ impl Benchmark {
                     0 => { println!("Verifying sort ..."); }
                     _ => {}
                 }
-                if !ensure_sorted(sorted) {
+                if !ensure_sorted(sorted.as_slice()) {
                     /* Print the values so we can see what they actually look like.
                        Note: Should probably only do this if the array is small */
                     for v in sorted.iter() {
@@ -133,28 +132,24 @@ impl Benchmark {
                 _ => {}
             }
             /* Record the time it took */
-            sort_times[trial_number] = timer.get_total_time();
+            sort_times.push(timer.get_total_time());
         }
 
         if self.num_trials > 0 {
             /* Print out the average time at the end */
-            let total_time = sort_times.iter().map(|&x| x).sum(); //do iter::sum |f| { sort_times.iter().advance(f) };
+            let total_time = sort_times.iter().map(|&x| x).sum();
             let average_time = total_time / (self.num_trials as u64);
             println!("Average time: {}", timer::format_as_time(average_time));
         }
     }
 }
 
-pub fn generate_random_array(size: uint) -> ~[uint] {
-    let ret = slice::build(Some(size), 
-                    |push| {
-                        for _ in range(0, size) {
-                            push(rand::random());
-                        }
-                    }
-                    );
-
-    return ret;
+pub fn generate_random_array(size: uint) -> Vec<uint> {
+    let mut ret = Vec::with_capacity(size);
+    for _ in range(0, size) {
+        ret.push(random());
+    }
+    ret
 }
 
 fn ensure_sorted(arr: &[uint]) -> bool {

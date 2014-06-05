@@ -2,6 +2,7 @@
 #![crate_type = "lib"]
 
 extern crate time;
+extern crate debug;
 
 static SEC_MULTIPLIER:u64 = 1000 * 1000 * 1000;
 static MIN_MULTIPLIER:u64 = 60 * SEC_MULTIPLIER;
@@ -22,7 +23,7 @@ impl Timer {
     pub fn end(&mut self) -> () {
         self.end_time = time::precise_time_ns();
     }
-    pub fn get_time_string(&mut self) -> ~str {
+    pub fn get_time_string(&mut self) -> String {
         return format_as_time(self.get_total_time());
     }
     pub fn get_total_time(&mut self) -> u64 {
@@ -33,7 +34,7 @@ impl Timer {
     }
 }
 
-pub fn format_as_time(total_time: u64) -> ~str {
+pub fn format_as_time(total_time: u64) -> String {
     let hours = total_time / HR_MULTIPLIER;
     let minutes = (total_time 
                    - hours * HR_MULTIPLIER) 
@@ -47,27 +48,27 @@ pub fn format_as_time(total_time: u64) -> ~str {
                        - minutes * MIN_MULTIPLIER 
                        - seconds * SEC_MULTIPLIER;
 
-    let mut time_string = ~"";
+    let mut time_string = String::new();
     if hours > 0 {
-        time_string.push_str(format!("{}:", hours as int));
+        time_string.push_str(format!("{}:", hours as int).as_slice());
     }
     if hours > 0 || minutes > 0 {
         if minutes < 10 && hours > 0 {
             time_string.push_str("0");
         }
-        time_string.push_str(format!("{}:", minutes as int));
+        time_string.push_str(format!("{}:", minutes as int).as_slice());
     }
     if hours > 0 || minutes > 0 || seconds > 0 {
         if seconds < 10 && (minutes > 0 || hours > 0) {
             // HACK: format!("%02?.", seconds) doesn't zero pad
             time_string.push_str("0");
         }
-        time_string.push_str(format!("{}.", seconds as int));
+        time_string.push_str(format!("{}.", seconds as int).as_slice());
         // nanoseconds don't need to be quite as accurate if we measure seconds
         let ns_as_string = format!("{:.5?}", (nanoseconds as f64) / (SEC_MULTIPLIER as f64));
-        time_string.push_str(format!("{:s}", ns_as_string.slice(2, 5)));
+        time_string.push_str(format!("{:s}", ns_as_string.as_slice().slice(2, 5)).as_slice());
     } else {
-        time_string.push_str(format!("{:s}", format_number(nanoseconds)));
+        time_string.push_str(format!("{:s}", format_number(nanoseconds)).as_slice());
     }
 
     if hours > 0 {
@@ -85,9 +86,10 @@ pub fn format_as_time(total_time: u64) -> ~str {
     return time_string;
 }
 
-fn format_number(num: u64) -> ~str {
+fn format_number(num: u64) -> String {
     let repr = num.to_str();
-    let mut ret_val = ~"";
+    let repr = repr.as_slice();
+    let mut ret_val = String::new();
     let mut index = 0;
     let length = repr.len();
 
@@ -109,9 +111,9 @@ fn format_number_test() {
     let num2 = 12345678;
     let num3 = 1234;
 
-    assert!(format_number(num1) == ~"123,456,789");
-    assert!(format_number(num2) == ~"12,345,678");
-    assert!(format_number(num3) == ~"1,234");
+    assert!(format_number(num1) == "123,456,789");
+    assert!(format_number(num2) == "12,345,678");
+    assert!(format_number(num3) == "1,234");
 }
 
 #[test]
@@ -121,8 +123,8 @@ fn format_as_time_test() {
     let num3 = 1 * MIN_MULTIPLIER + 5 * SEC_MULTIPLIER + 98765432;
     let num4 = 3 * HR_MULTIPLIER + num3;
 
-    assert!(format_as_time(num1) == ~"2,000 ns");
-    assert!(format_as_time(num2) == ~"3.141 sec");
-    assert!(format_as_time(num3) == ~"1:05.098 min");
-    assert!(format_as_time(num4) == ~"3:01:05.098 hr");
+    assert!(format_as_time(num1).as_slice() == "2,000 ns");
+    assert!(format_as_time(num2).as_slice() == "3.141 sec");
+    assert!(format_as_time(num3).as_slice() == "1:05.098 min");
+    assert!(format_as_time(num4).as_slice() == "3:01:05.098 hr");
 }

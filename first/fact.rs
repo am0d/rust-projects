@@ -14,7 +14,7 @@ fn fact(n: int) -> int {
 fn main() {
     let args = os::args();
     if args.len() >= 2 {
-        let val = match from_str::<int>(args[1]) {
+        let val = match from_str::<int>(args.get(1).as_slice()) {
             Some(n) => { n}
             _ => {
                 fail!("n must be an integer");
@@ -25,6 +25,6 @@ fn main() {
         println!("{}", val);
     }
     else {
-        println!("Usage: {} n", args[0]);
+        println!("Usage: {} n", args.get(0));
     }
 }

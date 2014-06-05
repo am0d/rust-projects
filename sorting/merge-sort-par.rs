@@ -2,26 +2,25 @@
    Tested to compile with rust-0.6-f1ddb8d.
 */
 extern crate benchmark;
-use std::slice;
 use std::comm::channel;
 use std::cell::RefCell;
 use benchmark::Benchmark;
 
-fn parallel_merge_sort_helper<T:Ord+Clone+Send>(arr: ~[T]) -> ~[T] {
+fn parallel_merge_sort_helper<T:Ord+Clone+Send>(arr: Vec<T>) -> Vec<T> {
     let max_threads = ::std::rt::default_sched_threads();
 
     parallel_merge_sort(arr, 0, max_threads)
 }
 
-fn parallel_merge_sort<T:Ord+Clone+Send>(arr: ~[T], depth: uint, max_threads: uint) -> ~[T] {
+fn parallel_merge_sort<T:Ord+Clone+Send>(arr: Vec<T>, depth: uint, max_threads: uint) -> Vec<T> {
     let length = arr.len();
     if length <= 1 {
-        return arr.to_owned();
+        return arr;
     }
 
     let middle = length / 2;
-    let mut left = arr.slice(0, middle).to_owned();
-    let mut right = arr.slice(middle, length).to_owned();
+    let mut left = Vec::from_slice(arr.slice(0, middle));
+    let mut right = Vec::from_slice(arr.slice(middle, length));
 
     if depth < max_threads {
         /* Create channel to pass the results back */
@@ -43,14 +42,15 @@ fn parallel_merge_sort<T:Ord+Clone+Send>(arr: ~[T], depth: uint, max_threads: ui
     merge(left, right)
 }
 
-fn merge<T:Ord+Clone>(left_orig: ~[T], right_orig: ~[T]) -> ~[T] {
+fn merge<T:Ord+Clone>(left_orig: Vec<T>, right_orig: Vec<T>) -> Vec<T> {
     let mut left = left_orig.clone();
     let mut right = right_orig.clone();
-    let mut result = slice::from_elem(0, left[0].clone());
+    let mut result = Vec::with_capacity(left_orig.len() + right_orig.len());
+    result.push(left.get(0).clone());
 
     while left.len() > 0 || right.len() > 0 {
         if left.len() > 0 && right.len() > 0 {
-            if left[0] < right[0] {
+            if left.get(0) < right.get(0) {
                 result.push(left.shift().unwrap());
             }
             else {

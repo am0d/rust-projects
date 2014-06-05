@@ -5,7 +5,7 @@ extern crate benchmark;
 
 use benchmark::Benchmark;
 
-fn swap_sort<T:Ord+Clone>(arr: ~[T]) -> ~[T] {
+fn swap_sort<T:Ord+Clone>(arr: Vec<T>) -> Vec<T> {
     let mut left = 0;
     let mut right: uint;
     let mut result = arr.clone();
@@ -14,10 +14,10 @@ fn swap_sort<T:Ord+Clone>(arr: ~[T]) -> ~[T] {
     while left < max {
         right = left + 1;
         while right < max {
-            if result[right] < result[left] {
+            if result.get(right) < result.get(left) {
                 // swap the two values
                 //vec::swap(result, left, right);
-                result.swap(left, right);
+                result.as_mut_slice().swap(left, right);
             }
             right += 1;
         }
@@ -25,7 +25,7 @@ fn swap_sort<T:Ord+Clone>(arr: ~[T]) -> ~[T] {
         left += 1;
     }
 
-    return result;
+    result
 }
 
 fn main() {

@@ -5,7 +5,7 @@ extern crate benchmark;
 
 use benchmark::Benchmark;
 
-fn selection_sort<T:Ord+Clone>(arr: ~[T]) -> ~[T] {
+fn selection_sort<T:Ord+Clone>(arr: Vec<T>) -> Vec<T> {
     let mut left: uint = 0;
     let mut right: uint;
     let mut result =  arr.clone();
@@ -16,7 +16,7 @@ fn selection_sort<T:Ord+Clone>(arr: ~[T]) -> ~[T] {
         indexOfMinValue = left;
         right = left + 1;
         while right < max + 1 {
-            if result[right] < result[indexOfMinValue] {
+            if result.get(right) < result.get(indexOfMinValue) {
                 indexOfMinValue = right;
             }
             right += 1;
@@ -24,13 +24,13 @@ fn selection_sort<T:Ord+Clone>(arr: ~[T]) -> ~[T] {
 
         if indexOfMinValue != left {
             // swap the two values
-            result.swap(left, indexOfMinValue);
+            result.as_mut_slice().swap(left, indexOfMinValue);
         }
 
         left += 1;
     }
 
-    return result;
+    result
 }
 
 fn main() {

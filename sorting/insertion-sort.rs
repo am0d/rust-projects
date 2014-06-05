@@ -5,17 +5,17 @@ extern crate benchmark;
 
 use benchmark::Benchmark;
 
-fn insertion_sort<T:Ord+Clone>(arr: ~[T]) -> ~[T] {
+fn insertion_sort<T:Ord+Clone>(arr: Vec<T>) -> Vec<T> {
     let mut index = 0;
     let length = arr.len();
     let mut result = arr.clone();
 
     while index < length {
-        let valueToInsert = result[index].clone();
+        let valueToInsert = result.get(index).clone();
         let mut holePos = index;
 
-        while holePos > 0 && valueToInsert < result[holePos - 1] {
-            result.swap(holePos, holePos - 1);
+        while holePos > 0 && valueToInsert < *result.get(holePos - 1) {
+            result.as_mut_slice().swap(holePos, holePos - 1);
             holePos -= 1;
         }
         index += 1;

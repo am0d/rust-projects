@@ -5,7 +5,7 @@ extern crate benchmark;
 
 use benchmark::Benchmark;
 
-fn bubble_sort<T:Ord+Clone>(arr: ~[T]) -> ~[T] {
+fn bubble_sort<T:Ord+Clone>(arr: Vec<T>) -> Vec<T> {
     let mut result = arr.clone();
     let mut left: uint;
     let mut right: uint = arr.len() - 1;
@@ -15,9 +15,9 @@ fn bubble_sort<T:Ord+Clone>(arr: ~[T]) -> ~[T] {
         swap_occurred = false;
         left = 0;
         while left < right {
-            if result[left+1] < result[left] {
+            if result.get(left+1) < result.get(left) {
                 // swap the two values
-                result.swap(left, left+1);
+                result.as_mut_slice().swap(left, left+1);
                 swap_occurred = true;
             }
             left += 1;
@@ -26,7 +26,7 @@ fn bubble_sort<T:Ord+Clone>(arr: ~[T]) -> ~[T] {
         right -= 1;
     }
 
-    return result;
+    result
 }
 
 fn main() {
