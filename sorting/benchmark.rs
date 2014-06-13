@@ -31,7 +31,7 @@ impl Benchmark {
     fn parse_opts(&mut self) {
         if self.parse_args {
             let args = os::args();
-            let opts = ~[
+            let opts = &[
                 optflagmulti("q", "quiet", "Provide less output"),
                 optopt("", "trialsize", "Number elements to sort in each trial", ""),
                 optopt("", "numtrials", "Number of trials to perform", ""),
