@@ -1,4 +1,4 @@
-#![crate_id = "benchmark#0.1"]
+#![crate_name = "benchmark"]
 #![crate_type = "lib"]
 
 extern crate getopts;
@@ -40,7 +40,7 @@ impl Benchmark {
                 ];
             let matches = match getopts(args.tail(), opts) {
                 result::Ok(m) => { m }
-                result::Err(f) => { fail!(f.to_str()) }
+                result::Err(f) => { fail!(f.to_string()) }
             };
             if matches.opt_present("h") || matches.opt_present("help") {
                 let brief = format!("Usage: {} [options]", args.as_slice().head().map(|x| x.as_slice()).unwrap_or(""));

@@ -9,43 +9,33 @@ pub struct Node<T> {
     key: T
 }
 
-macro_rules! tree_iterator(
-    ($name:ident -> $body:block) => (
-        pub struct $name<'t, T> {
-            stack: Vec<&'t Box<Node<T>>>
-        }
+pub struct PreOrderTreeIterator<'t, T> {
+    stack: Vec<&'t Box<Node<T>>>
+}
 
-        impl<'t, T:Ord+Eq> Iterator<&'t Box<Node<T>>> for $name<'t, T> {
-            fn next(&mut self) -> Option<&'t Box<Node<T>>> $body
+impl<'t, T:Ord+Eq> Iterator<&'t Box<Node<T>>> for PreOrderTreeIterator<'t, T> {
+    fn next(&mut self) -> Option<&'t Box<Node<T>>> {
+        match self.stack.pop() {
+            Some(ref n) => {
+                match n.left_child {
+                    Some(ref n) => {
+                        self.stack.push(n);
+                    },
+                    _ => ()
+                };
+                match n.right_child {
+                    Some(ref n) => {
+                        self.stack.push(n);
+                    },
+                    _ => ()
+                };
+                Some(*n)
+            },
+            None => None
         }
-        )
-    )
-
-tree_iterator!(PreOrderTreeIterator -> {
-    match self.stack.pop() {
-        Some(ref n) => {
-            match n.left_child {
-                Some(ref n) => {
-                    self.stack.push(n);
-                },
-                _ => ()
-            };
-            match n.right_child {
-                Some(ref n) => {
-                    self.stack.push(n);
-                },
-                _ => ()
-            };
-            Some(*n)
-        },
-        None => None
     }
-})
+}
 
-
-tree_iterator!(InOrderTreeIterator -> {
-    None // TODO implement this one yet
-})
 
 impl<T:Ord+Eq> Node<T> {
     pub fn new (nodeKey: T) -> Node<T> {

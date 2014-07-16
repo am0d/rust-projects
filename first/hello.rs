@@ -1,5 +1,3 @@
-#![crate_id="hello#0.1"]
-
 use std::os;
 
 /// The main entry point for the application

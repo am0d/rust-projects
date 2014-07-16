@@ -1,4 +1,4 @@
-#![crate_id = "timer"]
+#![crate_name = "timer"]
 #![crate_type = "lib"]
 
 extern crate time;
@@ -87,7 +87,7 @@ pub fn format_as_time(total_time: u64) -> String {
 }
 
 fn format_number(num: u64) -> String {
-    let repr = num.to_str();
+    let repr = num.to_string();
     let repr = repr.as_slice();
     let mut ret_val = String::new();
     let mut index = 0;
