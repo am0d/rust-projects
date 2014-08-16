@@ -1,13 +1,14 @@
-#![crate_name = "benchmark"]
-#![crate_type = "lib"]
-
 extern crate getopts;
-extern crate timer;
+extern crate time;
+extern crate debug;
+
 use std::{result, os};
 use std::rand::random;
 use std::iter::AdditiveIterator;
 use getopts::{getopts, optflag, optflagmulti, optopt, usage};
 use timer::Timer;
+
+pub mod timer;
 
 pub struct Benchmark {
     num_trials: uint,

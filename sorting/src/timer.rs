@@ -1,8 +1,4 @@
-#![crate_name = "timer"]
-#![crate_type = "lib"]
-
 extern crate time;
-extern crate debug;
 
 static SEC_MULTIPLIER:u64 = 1000 * 1000 * 1000;
 static MIN_MULTIPLIER:u64 = 60 * SEC_MULTIPLIER;

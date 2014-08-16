@@ -1,9 +1,9 @@
 /* Sample swap sort program in Rust.
    Tested to compile with rust-0.6-f1ddb8d.
 */
-extern crate benchmark;
 
-use benchmark::Benchmark;
+extern crate sorting;
+use sorting::Benchmark;
 
 fn swap_sort<T:Ord+Clone>(arr: Vec<T>) -> Vec<T> {
     let mut left = 0;
@@ -14,7 +14,7 @@ fn swap_sort<T:Ord+Clone>(arr: Vec<T>) -> Vec<T> {
     while left < max {
         right = left + 1;
         while right < max {
-            if result.get(right) < result.get(left) {
+            if result[right] < result[left] {
                 // swap the two values
                 //vec::swap(result, left, right);
                 result.as_mut_slice().swap(left, right);

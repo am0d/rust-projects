@@ -1,9 +1,9 @@
 /* Sample selection sort program in Rust.
    Tested to compile with rust-0.6.
 */
-extern crate benchmark;
 
-use benchmark::Benchmark;
+extern crate sorting;
+use sorting::Benchmark;
 
 fn selection_sort<T:Ord+Clone>(arr: Vec<T>) -> Vec<T> {
     let mut left: uint = 0;
@@ -16,7 +16,7 @@ fn selection_sort<T:Ord+Clone>(arr: Vec<T>) -> Vec<T> {
         indexOfMinValue = left;
         right = left + 1;
         while right < max + 1 {
-            if result.get(right) < result.get(indexOfMinValue) {
+            if result[right] < result[indexOfMinValue] {
                 indexOfMinValue = right;
             }
             right += 1;

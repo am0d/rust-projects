@@ -1,9 +1,9 @@
 /* Sample bubble sort program in Rust.
    Tested to compile with rust-0.6.
 */
-extern crate benchmark;
 
-use benchmark::Benchmark;
+extern crate sorting;
+use sorting::Benchmark;
 
 fn bubble_sort<T:Ord+Clone>(arr: Vec<T>) -> Vec<T> {
     let mut result = arr.clone();
@@ -15,7 +15,7 @@ fn bubble_sort<T:Ord+Clone>(arr: Vec<T>) -> Vec<T> {
         swap_occurred = false;
         left = 0;
         while left < right {
-            if result.get(left+1) < result.get(left) {
+            if result[left+1] < result[left] {
                 // swap the two values
                 result.as_mut_slice().swap(left, left+1);
                 swap_occurred = true;

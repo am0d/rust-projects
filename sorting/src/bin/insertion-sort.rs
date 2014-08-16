@@ -1,9 +1,9 @@
 /* Sample insertion sort program in Rust.
    Tested to compile with rust-0.6.
  */
-extern crate benchmark;
 
-use benchmark::Benchmark;
+extern crate sorting;
+use sorting::Benchmark;
 
 fn insertion_sort<T:Ord+Clone>(arr: Vec<T>) -> Vec<T> {
     let mut index = 0;
@@ -11,10 +11,10 @@ fn insertion_sort<T:Ord+Clone>(arr: Vec<T>) -> Vec<T> {
     let mut result = arr.clone();
 
     while index < length {
-        let valueToInsert = result.get(index).clone();
+        let valueToInsert = result[index].clone();
         let mut holePos = index;
 
-        while holePos > 0 && valueToInsert < *result.get(holePos - 1) {
+        while holePos > 0 && valueToInsert < result[holePos - 1] {
             result.as_mut_slice().swap(holePos, holePos - 1);
             holePos -= 1;
         }

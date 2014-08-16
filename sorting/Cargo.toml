@@ -1,0 +1,5 @@
+[package]
+
+name = "sorting"
+version = "0.0.1"
+authors = ["Damien Schoof <damien.schoof@gmail.com>"]
