@@ -17,11 +17,11 @@ fn ackermann(m: int, n: int) -> int {
 fn main() {
     let args = os::args();
     if args.len() < 3 {
-        println!("usage: {} m n", args.get(0));
+        println!("usage: {} m n", args[0]);
         return;
     };
 
-    let m = match from_str::<int>(args.get(1).as_slice()) {
+    let m = match from_str::<int>(args[1].as_slice()) {
         Some(x) => {x}
         _ => {
             println!("m must be an integer");
@@ -29,7 +29,7 @@ fn main() {
         }
     };
 
-    let n = match from_str::<int>(args.get(2).as_slice()) {
+    let n = match from_str::<int>(args[2].as_slice()) {
         Some(x) => {x}
         _ => {
             println!("n must be an integer");

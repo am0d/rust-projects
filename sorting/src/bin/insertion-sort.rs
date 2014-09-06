@@ -11,12 +11,12 @@ fn insertion_sort<T:Ord+Clone>(arr: Vec<T>) -> Vec<T> {
     let mut result = arr.clone();
 
     while index < length {
-        let valueToInsert = result[index].clone();
-        let mut holePos = index;
+        let value_to_insert = result[index].clone();
+        let mut hole_pos = index;
 
-        while holePos > 0 && valueToInsert < result[holePos - 1] {
-            result.as_mut_slice().swap(holePos, holePos - 1);
-            holePos -= 1;
+        while hole_pos > 0 && value_to_insert < result[hole_pos - 1] {
+            result.as_mut_slice().swap(hole_pos, hole_pos - 1);
+            hole_pos -= 1;
         }
         index += 1;
     }

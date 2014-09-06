@@ -9,7 +9,7 @@ pub struct Node<T> {
     key: T
 }
 
-pub struct PreOrderTreeIterator<'t, T> {
+pub struct PreOrderTreeIterator<'t, T: 't> {
     stack: Vec<&'t Box<Node<T>>>
 }
 
@@ -38,11 +38,11 @@ impl<'t, T:Ord+Eq> Iterator<&'t Box<Node<T>>> for PreOrderTreeIterator<'t, T> {
 
 
 impl<T:Ord+Eq> Node<T> {
-    pub fn new (nodeKey: T) -> Node<T> {
+    pub fn new (node_key: T) -> Node<T> {
         Node {
             left_child: None,
             right_child: None,
-            key: nodeKey
+            key: node_key
         }
     }
 

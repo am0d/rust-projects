@@ -10,21 +10,21 @@ fn selection_sort<T:Ord+Clone>(arr: Vec<T>) -> Vec<T> {
     let mut right: uint;
     let mut result =  arr.clone();
     let max = result.len() - 1;
-    let mut indexOfMinValue: uint;
+    let mut index_of_min_value: uint;
 
     while left < max {
-        indexOfMinValue = left;
+        index_of_min_value = left;
         right = left + 1;
         while right < max + 1 {
-            if result[right] < result[indexOfMinValue] {
-                indexOfMinValue = right;
+            if result[right] < result[index_of_min_value] {
+                index_of_min_value = right;
             }
             right += 1;
         }
 
-        if indexOfMinValue != left {
+        if index_of_min_value != left {
             // swap the two values
-            result.as_mut_slice().swap(left, indexOfMinValue);
+            result.as_mut_slice().swap(left, index_of_min_value);
         }
 
         left += 1;
