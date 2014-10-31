@@ -21,8 +21,8 @@ fn parallel_merge_sort<T:Ord+Clone+Send>(arr: Vec<T>, depth: uint, max_threads: 
     }
 
     let middle = length / 2;
-    let mut left = Vec::from_slice(arr.slice(0, middle));
-    let mut right = Vec::from_slice(arr.slice(middle, length));
+    let mut left = arr.slice(0, middle).to_vec();
+    let mut right = arr.slice(middle, length).to_vec();
 
     if depth < max_threads {
         /* Create channel to pass the results back */

@@ -1,6 +1,5 @@
 extern crate getopts;
 extern crate time;
-extern crate debug;
 
 use std::{result, os};
 use std::rand::random;
@@ -41,7 +40,7 @@ impl Benchmark {
                 ];
             let matches = match getopts(args.tail(), opts) {
                 result::Ok(m) => { m }
-                result::Err(f) => { fail!(f.to_string()) }
+                result::Err(f) => { panic!(f.to_string()) }
             };
             if matches.opt_present("h") || matches.opt_present("help") {
                 let brief = format!("Usage: {} [options]", args.as_slice().head().map(|x| x.as_slice()).unwrap_or(""));
@@ -64,7 +63,7 @@ impl Benchmark {
                 Some(size) => {
                     match from_str::<uint>(size.as_slice()) {
                         Some(ts) => { self.trial_size = ts }
-                        None => { fail!("Trial size must be an integer") }
+                        None => { panic!("Trial size must be an integer") }
                     }
                 }
                 None => {}
@@ -74,7 +73,7 @@ impl Benchmark {
                 Some(trials) => {
                     match from_str::<uint>(trials.as_slice()) {
                         Some(t) => { self.num_trials = t }
-                        None => { fail!("Number of trials must be an integer") }
+                        None => { panic!("Number of trials must be an integer") }
                     }
                 }
                 None => {}
@@ -119,7 +118,7 @@ impl Benchmark {
                     for v in sorted.iter() {
                         println!("{}", *v as uint);
                     }
-                    fail!(format!("Trial {}: Array was not sorted correctly", trial_number));
+                    panic!(format!("Trial {}: Array was not sorted correctly", trial_number));
                 }
                 match self.quiet {
                     0 => { println!("Sort was correct."); }

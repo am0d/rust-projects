@@ -1,8 +1,8 @@
 extern crate time;
 
-static SEC_MULTIPLIER:u64 = 1000 * 1000 * 1000;
-static MIN_MULTIPLIER:u64 = 60 * SEC_MULTIPLIER;
-static HR_MULTIPLIER:u64 = 60 * MIN_MULTIPLIER;
+const SEC_MULTIPLIER:u64 = 1000 * 1000 * 1000;
+const MIN_MULTIPLIER:u64 = 60 * SEC_MULTIPLIER;
+const HR_MULTIPLIER:u64 = 60 * MIN_MULTIPLIER;
 
 pub struct Timer {
     start_time: u64,
@@ -61,7 +61,7 @@ pub fn format_as_time(total_time: u64) -> String {
         }
         time_string.push_str(format!("{}.", seconds as int).as_slice());
         // nanoseconds don't need to be quite as accurate if we measure seconds
-        let ns_as_string = format!("{:.5?}", (nanoseconds as f64) / (SEC_MULTIPLIER as f64));
+        let ns_as_string = format!("{:.5f}", (nanoseconds as f64) / (SEC_MULTIPLIER as f64));
         time_string.push_str(format!("{:s}", ns_as_string.as_slice().slice(2, 5)).as_slice());
     } else {
         time_string.push_str(format!("{:s}", format_number(nanoseconds)).as_slice());

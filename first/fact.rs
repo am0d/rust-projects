@@ -17,7 +17,7 @@ fn main() {
         let val = match from_str::<int>(args[1].as_slice()) {
             Some(n) => { n}
             _ => {
-                fail!("n must be an integer");
+                panic!("n must be an integer");
             }
         };
             
