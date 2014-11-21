@@ -26,7 +26,7 @@ impl Timer {
         return self.end_time - self.start_time;
     }
     pub fn show_time(&mut self) -> () {
-        println!("Total time: {:s}", self.get_time_string());
+        println!("Total time: {:}", self.get_time_string());
     }
 }
 
@@ -61,10 +61,10 @@ pub fn format_as_time(total_time: u64) -> String {
         }
         time_string.push_str(format!("{}.", seconds as int).as_slice());
         // nanoseconds don't need to be quite as accurate if we measure seconds
-        let ns_as_string = format!("{:.5f}", (nanoseconds as f64) / (SEC_MULTIPLIER as f64));
-        time_string.push_str(format!("{:s}", ns_as_string.as_slice().slice(2, 5)).as_slice());
+        let ns_as_string = format!("{:.5}", (nanoseconds as f64) / (SEC_MULTIPLIER as f64));
+        time_string.push_str(format!("{:}", ns_as_string.as_slice().slice(2, 5)).as_slice());
     } else {
-        time_string.push_str(format!("{:s}", format_number(nanoseconds)).as_slice());
+        time_string.push_str(format!("{:}", format_number(nanoseconds)).as_slice());
     }
 
     if hours > 0 {

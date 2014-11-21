@@ -3,3 +3,6 @@
 name = "sorting"
 version = "0.0.1"
 authors = ["Damien Schoof <damien.schoof@gmail.com>"]
+
+[dependencies.time]
+git = "https://github.com/rust-lang/time"
