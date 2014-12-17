@@ -24,7 +24,7 @@ fn main() {
 
     let mut prev_receiver = receiver;
 
-    spawn(proc() {
+    spawn(move || {
         generate(&sender);
     });
 
@@ -35,7 +35,7 @@ fn main() {
         let (new_sender, new_receiver) = channel();
         let prev_receiver_cell = RefCell::new(prev_receiver);
 
-        spawn(proc() {
+        spawn(move || {
             filter(&prev_receiver_cell.unwrap(), &new_sender, prime);
         });
         prev_receiver = new_receiver;

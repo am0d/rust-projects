@@ -4,6 +4,7 @@ const SEC_MULTIPLIER:u64 = 1000 * 1000 * 1000;
 const MIN_MULTIPLIER:u64 = 60 * SEC_MULTIPLIER;
 const HR_MULTIPLIER:u64 = 60 * MIN_MULTIPLIER;
 
+#[deriving(Copy)]
 pub struct Timer {
     start_time: u64,
     end_time: u64

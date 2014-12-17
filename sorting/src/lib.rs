@@ -9,6 +9,7 @@ use timer::Timer;
 
 pub mod timer;
 
+#[deriving(Copy)]
 pub struct Benchmark {
     num_trials: uint,
     trial_size: uint,
@@ -39,8 +40,8 @@ impl Benchmark {
                 optflag("h", "help", "Show this help")
                 ];
             let matches = match getopts(args.tail(), opts) {
-                result::Ok(m) => { m }
-                result::Err(f) => { panic!(f.to_string()) }
+                result::Result::Ok(m) => { m }
+                result::Result::Err(f) => { panic!(f.to_string()) }
             };
             if matches.opt_present("h") || matches.opt_present("help") {
                 let brief = format!("Usage: {} [options]", args.as_slice().head().map(|x| x.as_slice()).unwrap_or(""));

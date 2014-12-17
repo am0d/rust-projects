@@ -6,7 +6,7 @@ fn main () {
 
     for child_number in range(0, 20i) {
         let child_sender = sender.clone();
-        spawn(proc() {
+        spawn(move || {
             child_sender.send(child_number);
         });
     }

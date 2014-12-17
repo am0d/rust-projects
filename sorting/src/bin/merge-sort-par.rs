@@ -28,9 +28,9 @@ fn parallel_merge_sort<T:Ord+Clone+Send>(arr: Vec<T>, depth: uint, max_threads: 
         /* Create channel to pass the results back */
         let (sender, receiver) = channel();
         let left_cell = RefCell::new(left); // the only way to access the above mutable field
-        spawn(proc() {
+        spawn(move || {
             // take the ref out of the cell, sort it, and send it back to the parent process
-            let sorted_left =  parallel_merge_sort(left_cell.unwrap(), depth + 1, max_threads);
+            let sorted_left =  parallel_merge_sort(left_cell.into_inner(), depth + 1, max_threads);
             sender.send(sorted_left);
         });
         right = parallel_merge_sort(right, depth + 1, max_threads);
